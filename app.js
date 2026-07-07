@@ -67,6 +67,10 @@ window.acceptDisclaimer = function () {
 //  SESSION CHECK — auto-restore logged-in user
 // =============================================
 async function checkSessionAndShow() {
+  if (!supabase) {
+    showAuthScreen()
+    return
+  }
   const { data: { session } } = await supabase.auth.getSession()
   if (session) {
     window.location.href = 'welcome.html'
@@ -136,6 +140,10 @@ window.showForm = function (type) {
 // =============================================
 window.handleLogin = async function (e) {
   e.preventDefault()
+  if (!supabase) {
+    showToast('⚠️ Server connection unavailable. Please try again later.')
+    return
+  }
   const email    = document.getElementById('login-email').value.trim()
   const password = document.getElementById('login-password').value
 
@@ -176,6 +184,10 @@ window.handleLogin = async function (e) {
 // =============================================
 window.handleSignup = async function (e) {
   e.preventDefault()
+  if (!supabase) {
+    showToast('⚠️ Server connection unavailable. Please try again later.')
+    return
+  }
   const username = document.getElementById('signup-name').value.trim()
   const email    = document.getElementById('signup-email').value.trim()
   const password = document.getElementById('signup-password').value
@@ -234,7 +246,7 @@ window.handleSignup = async function (e) {
 //  LOGOUT  (Supabase signOut)
 // =============================================
 window.handleLogout = async function () {
-  await supabase.auth.signOut()
+  if (supabase) await supabase.auth.signOut()
 
   const dash = document.getElementById('dashboard-screen')
   dash.classList.add('hidden')
@@ -345,17 +357,19 @@ document.addEventListener('click', function (e) {
 // =============================================
 //  LISTEN FOR AUTH STATE CHANGES (e.g. tab sync)
 // =============================================
-supabase.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_OUT') {
-    const dash = document.getElementById('dashboard-screen')
-    if (dash && !dash.classList.contains('hidden')) {
-      dash.classList.add('hidden')
-      dash.style.display = 'none'
-      dash.classList.remove('active')
-      showAuthScreen()
+if (supabase) {
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT') {
+      const dash = document.getElementById('dashboard-screen')
+      if (dash && !dash.classList.contains('hidden')) {
+        dash.classList.add('hidden')
+        dash.style.display = 'none'
+        dash.classList.remove('active')
+        showAuthScreen()
+      }
     }
-  }
-})
+  })
+}
 
 // =============================================
 //  INIT — Run on page load
