@@ -2,5 +2,7 @@
   "outputDirectory": "dist",
   "rewrites": [],
   "redirects": [],
-  "headers": []
+  "headers": [],
+  "cleanUrls":true,
+  "trailingSlash":false
 }
