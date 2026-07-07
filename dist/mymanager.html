@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage My Hookups</title>
+  <style>
+    body { font-family: 'Inter', sans-serif; color: white; padding: 2rem; background: var(--bg-deep); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+    .btn-outline { background: transparent; border: 1px solid #ef4444; color: #ef4444; }
+    .btn-outline:hover { background: rgba(239,68,68,0.1); }
+  </style>
+  <script>
+    function getSavedTheme() { return localStorage.getItem('theme') || 'dark'; }
+    document.documentElement.setAttribute('data-theme', getSavedTheme());
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      document.getElementById('theme-toggle-btn').textContent = next === 'dark' ? '☀️' : '🌙';
+    }
+  </script>
+  <script type="module" crossorigin src="/assets/mymanager-C4PVQ3qH.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/supabase-CWCdB8CA.js">
+  <link rel="stylesheet" crossorigin href="/assets/supabase-GTnbcBep.css">
+</head>
+<body>
+  <button id="theme-toggle-btn" class="btn btn-secondary" style="position: fixed; top: 1rem; right: 1rem; z-index: 10000; padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;" onclick="toggleTheme()">☀️</button>
+  <script>document.getElementById('theme-toggle-btn').textContent = getSavedTheme() === 'dark' ? '☀️' : '🌙';</script>
+  <div class="bg-particles" id="particles"></div>
+  <div style="max-width: 1200px; margin: 0 auto; width: 100%;">
+    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+      <h2 style="font-size: 2rem; color: var(--accent-light);">Manage My Hookups</h2>
+      <button class="btn btn-secondary" onclick="window.location.href='welcome.html'">Back to Welcome</button>
+    </header>
+    <div id="hookups-grid" class="grid"></div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="edit-overlay" class="overlay hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 1rem;">
+    <div class="glass-card" style="padding: 2rem; max-width: 500px; width: 100%; text-align: left; overflow-y: auto; max-height: 90vh;">
+      <h2 style="margin-top: 0; font-size: 1.5rem; color: #a78bfa;">Edit Hookup Details</h2>
+      <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 1rem;">Note: To change pictures, please delete this hookup and upload a new one.</p>
+      <form id="edit-form" style="display: flex; flex-direction: column; gap: 1rem;">
+        <input type="hidden" id="edit-id" />
+        <div>
+          <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Name</label>
+          <input id="edit-name" type="text" required style="width: 100%; padding: 0.8rem; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary);" />
+        </div>
+        <div>
+          <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Phone</label>
+          <input id="edit-phone" type="tel" required style="width: 100%; padding: 0.8rem; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary);" />
+        </div>
+        <div>
+          <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Location</label>
+          <input id="edit-location" type="text" required style="width: 100%; padding: 0.8rem; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary);" />
+        </div>
+        <div>
+          <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Description</label>
+          <textarea id="edit-description" rows="4" required style="width: 100%; padding: 0.8rem; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary); resize: vertical;"></textarea>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
+          <button type="submit" id="btn-edit-submit" class="btn btn-primary" style="flex: 1; padding: 1rem;">Save Changes</button>
+          <button type="button" class="btn btn-secondary" style="flex: 1; padding: 1rem;" onclick="closeEdit()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>

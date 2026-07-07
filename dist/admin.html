@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin – Manage All Hookups</title>
+  <style>
+    body { font-family: 'Inter', sans-serif; color: var(--text-primary); background: var(--bg-deep); padding: 2rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+  </style>
+  <script type="module" crossorigin src="/assets/admin-DQogykLk.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/supabase-CWCdB8CA.js">
+  <link rel="stylesheet" crossorigin href="/assets/supabase-GTnbcBep.css">
+</head>
+<body>
+  <button id="theme-toggle-btn" class="btn btn-secondary" style="position: fixed; top: 1rem; right: 1rem; z-index: 10000; padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;" onclick="toggleTheme()">☀️</button>
+  <script>
+    function getSavedTheme(){return localStorage.getItem('theme')||'dark';}
+    document.documentElement.setAttribute('data-theme', getSavedTheme());
+    function toggleTheme(){
+      const current=document.documentElement.getAttribute('data-theme')||'dark';
+      const next=current==='dark'?'light':'dark';
+      document.documentElement.setAttribute('data-theme',next);
+      localStorage.setItem('theme',next);
+      document.getElementById('theme-toggle-btn').textContent=next==='dark'?'☀️':'🌙';
+    }
+  </script>
+  <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;">
+    <h2 style="font-size:2rem;color:var(--accent-light);">All Hookups (Admin)</h2>
+    <button class="btn btn-secondary" onclick="window.location.href='welcome.html'">Back to Welcome</button>
+  </header>
+  <div id="hookups-grid" class="grid"></div>
+
+</body>
+</html>

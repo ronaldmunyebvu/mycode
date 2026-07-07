@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Zimpussy — Premium adult social platform. 18+ only." />
+  <title>Zimpussy | 18+ Adult Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
+  <script>
+    function getSavedTheme() { return localStorage.getItem('theme') || 'dark'; }
+    document.documentElement.setAttribute('data-theme', getSavedTheme());
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      document.getElementById('theme-toggle-btn').textContent = next === 'dark' ? '☀️' : '🌙';
+    }
+  </script>
+  <script type="module" crossorigin src="/assets/main-DOHgZBPl.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/supabase-CWCdB8CA.js">
+  <link rel="stylesheet" crossorigin href="/assets/supabase-GTnbcBep.css">
+</head>
+<body>
+  <div class="bg-slideshow"></div>
+  <button id="theme-toggle-btn" class="btn btn-secondary" style="position: fixed; top: 1rem; right: 1rem; z-index: 10000; padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;" onclick="toggleTheme()">☀️</button>
+  <script>document.getElementById('theme-toggle-btn').textContent = getSavedTheme() === 'dark' ? '☀️' : '🌙';</script>
+
+  <!-- ===================== DISCLAIMER MODAL ===================== -->
+  <div id="disclaimer-overlay" class="overlay active">
+    <div id="disclaimer-modal" class="modal glass-card">
+      <div class="modal-icon">⚠️</div>
+      <h1 class="modal-title">Adult Content Warning</h1>
+      <div class="divider"></div>
+      <p class="modal-text">
+        This website is a platform intended for consenting adults to meet and arrange encounters, which may involve <strong>exchanging money or simply having fun</strong>, depending entirely on what you mutually agree upon. By continuing, you confirm that:
+      </p>
+      <ul class="disclaimer-list">
+        <li>✔ You are <strong>18 years of age or older</strong></li>
+        <li>✔ You understand this site facilitates adult arrangements</li>
+        <li>✔ You take full responsibility for any agreements or interactions you make</li>
+        <li>✔ Access to this type of platform is legal in your jurisdiction</li>
+      </ul>
+      <div class="modal-actions">
+        <button id="btn-accept" class="btn btn-primary" onclick="acceptDisclaimer()">
+          ✓ &nbsp;I'm 18+ — Enter Site
+        </button>
+        <a href="https://www.google.com" class="btn btn-secondary">
+          ✗ &nbsp;I'm Under 18 — Leave
+        </a>
+      </div>
+      <p class="modal-footer-note">
+        By clicking "Enter Site" you agree to our Terms of Service and Privacy Policy.
+      </p>
+    </div>
+  </div>
+
+  <!-- ===================== LOGIN / SIGNUP SCREEN ===================== -->
+  <div id="auth-screen" class="screen hidden">
+    <div class="bg-particles" id="particles"></div>
+
+    <header class="site-header">
+      <div class="logo">
+        <span class="logo-icon">🔥</span>
+        <span class="logo-text"><span>Zim<span class="accent">pussy</span></span></span>
+              <button class="btn btn-primary" onclick="showManagerPrompt()">Manager</button>
+        </div>
+      <div id="visitor-badge" class="visitor-badge">
+        <span class="visitor-icon">👁️</span>
+        <span id="visitor-count-display">0</span> visitors
+      </div>
+    </header>
+    <div id="manager-overlay" class="overlay hidden">
+  <div class="modal glass-card" style="max-width: 320px;">
+    <h2 class="modal-title">Manager Access</h2>
+    <div class="divider"></div>
+    <p class="modal-text">Enter the manager password to continue:</p>
+    <input id="manager-pass" type="password" placeholder="Password" class="full-width" style="margin:0.5rem 0; padding:0.5rem;" />
+    <button class="btn btn-primary full-width" onclick="checkManagerPass()">Enter</button>
+    <button class="btn btn-secondary full-width" style="margin-top:0.5rem;" onclick="hideManagerPrompt()">Cancel</button>
+  </div>
+</div>
+<script>
+function showManagerPrompt() {
+  document.getElementById('manager-overlay').classList.remove('hidden');
+  document.getElementById('manager-pass').value = '';
+  document.getElementById('manager-pass').focus();
+}
+function hideManagerPrompt() {
+  document.getElementById('manager-overlay').classList.add('hidden');
+}
+function checkManagerPass() {
+  const pwd = document.getElementById('manager-pass').value;
+  if (pwd === 'uvbeynumdlanor') {
+    hideManagerPrompt();
+    window.location.href = 'mymanager.html';
+  } else {
+    alert('Incorrect password');
+  }
+}
+</script>
+
+    <main class="auth-main">
+      <div class="auth-hero">
+        <h2 class="hero-title">Find Your Perfect<br /><span class="accent gradient-text">Connection</span></h2>
+        <p class="hero-subtitle">Join thousands of adults looking for meaningful and exciting encounters.</p>
+      </div>
+
+      <!-- Auth Toggle Buttons -->
+      <div id="auth-toggle-container" class="auth-toggle-container glass-card">
+        <div class="auth-tabs">
+          <button id="tab-login" class="auth-tab active" onclick="showForm('login')">Login</button>
+          <button id="tab-signup" class="auth-tab" onclick="showForm('signup')">Sign Up</button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label for="login-email">Email Address</label>
+            <input id="login-email" type="email" placeholder="you@example.com" required />
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input id="login-password" type="password" placeholder="••••••••" required />
+          </div>
+          <button type="submit" id="btn-login" class="btn btn-primary full-width">
+            🔐 &nbsp;Login to Zimpussy
+          </button>
+          <p class="switch-text">Don't have an account? <a href="#" onclick="showForm('signup')">Sign Up Free</a></p>
+        </form>
+
+        <!-- SIGNUP FORM -->
+        <form id="signup-form" class="auth-form hidden" onsubmit="handleSignup(event)">
+          <div class="form-group">
+            <label for="signup-name">Username</label>
+            <input id="signup-name" type="text" placeholder="Choose a username" required />
+          </div>
+          <div class="form-group">
+            <label for="signup-email">Email Address</label>
+            <input id="signup-email" type="email" placeholder="you@example.com" required />
+          </div>
+          <div class="form-group">
+            <label for="signup-password">Password</label>
+            <input id="signup-password" type="password" placeholder="Create a strong password" required />
+          </div>
+          <div class="form-group">
+            <label for="signup-confirm">Confirm Password</label>
+            <input id="signup-confirm" type="password" placeholder="Repeat your password" required />
+          </div>
+          <button type="submit" id="btn-signup" class="btn btn-primary full-width">
+            🚀 &nbsp;Create My Account
+          </button>
+          <p class="switch-text">Already have an account? <a href="#" onclick="showForm('login')">Login</a></p>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <!-- ===================== DASHBOARD (After Login) ===================== -->
+  <div id="dashboard-screen" class="screen hidden">
+    <div class="bg-particles" id="particles2"></div>
+
+    <header class="site-header">
+      <div class="logo">
+        <span class="logo-icon">🔥</span>
+        <span class="logo-text">Zim<span class="accent">pussy</span></span>
+      </div>
+      <div class="header-right">
+        <button class="btn btn-secondary" onclick="window.location.href='mymanager.html'">Manager</button>
+        <button class="btn btn-secondary" onclick="window.location.href='mymanager.html'">Manager</button>
+        <button class="btn btn-secondary" onclick="window.location.href='mymanager.html'">Manager</button>
+        <div id="visitor-badge" class="visitor-badge">
+          <span class="visitor-icon">👁️</span>
+          <span id="visitor-count-display2">0</span> visitors
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="handleLogout()">Logout</button>
+      </div>
+    </header>
+
+    <main class="dashboard-main">
+      <div class="welcome-section">
+        <p class="welcome-label">Welcome back,</p>
+        <h2 class="welcome-name" id="welcome-username">User</h2>
+        <p class="welcome-sub">What are you looking for today?</p>
+      </div>
+
+      <!-- HOOKUP BUTTON — the main CTA -->
+      <div class="hookup-section">
+        <button id="btn-hookup" class="btn-hookup pulse-glow" onclick="openHookup()">
+          <span class="hookup-icon">💋</span>
+          <span class="hookup-text">My Hookup</span>
+          <span class="hookup-sub">Find your match now</span>
+        </button>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="stats-row">
+        <div class="stat-card glass-card">
+          <span class="stat-icon">👥</span>
+          <span class="stat-value" id="online-count">1,247</span>
+          <span class="stat-label">Online Now</span>
+        </div>
+        <div class="stat-card glass-card">
+          <span class="stat-icon">💬</span>
+          <span class="stat-value">3</span>
+          <span class="stat-label">New Messages</span>
+        </div>
+        <div class="stat-card glass-card">
+          <span class="stat-icon">❤️</span>
+          <span class="stat-value">12</span>
+          <span class="stat-label">Likes Today</span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ===================== HOOKUP MODAL ===================== -->
+  <div id="hookup-overlay" class="overlay hidden">
+    <div class="modal glass-card">
+      <h2 class="modal-title" style="font-size:1.8rem;">💋 My Hookup</h2>
+      <div class="divider"></div>
+      <p class="modal-text">This feature is coming soon! We're matching you with nearby connections.</p>
+      <div class="loading-bar"><div class="loading-fill"></div></div>
+      <p style="color:#a78bfa; font-size:0.9rem; margin-top:10px;">Finding matches near you...</p>
+      <button class="btn btn-secondary" style="margin-top:1.5rem;" onclick="closeHookup()">Close</button>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast hidden"></div>
+
+</body>
+</html>
