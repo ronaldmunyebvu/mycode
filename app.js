@@ -60,7 +60,7 @@ function hideDisclaimer() {
 window.acceptDisclaimer = function () {
   sessionStorage.setItem(DISCLAIMER_KEY, 'true')
   hideDisclaimer()
-  setTimeout(() => checkSessionAndShow(), 300)
+  showAuthScreen()
 }
 
 // =============================================
