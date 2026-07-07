@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+      font-family: 'Inter', sans-serif;
+      text-align: center;
+    }
+    h1 {
+      font-size: 3rem;
+    }
+    .username {
+      color: #a78bfa;
+    }
+  </style>
+  <script>
+    function getSavedTheme() { return localStorage.getItem('theme') || 'dark'; }
+    document.documentElement.setAttribute('data-theme', getSavedTheme());
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      document.getElementById('theme-toggle-btn').textContent = next === 'dark' ? '☀️' : '🌙';
+    }
+  </script>
+</head>
+<body>
+  <button id="theme-toggle-btn" class="btn btn-secondary" style="position: fixed; top: 1rem; right: 1rem; z-index: 10000; padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;" onclick="toggleTheme()">☀️</button>
+  <script>document.getElementById('theme-toggle-btn').textContent = getSavedTheme() === 'dark' ? '☀️' : '🌙';</script>
+
+  <div class="glass-card" style="padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; align-items: center; width: 100%; height: 100vh; margin: 0;">
+    <h1 style="font-size: clamp(2rem, 5vw, 3rem);">Welcome <br><span class="username" id="display-name"></span></h1>
+    
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem; width: 100%;">
+      <button class="btn btn-primary" style="flex: 1; font-size: 1rem; padding: 1rem;" onclick="openUploadForm()">
+        Upload Hookup
+      </button>
+      <button class="btn btn-secondary" style="flex: 1; font-size: 1rem; padding: 1rem;" onclick="window.location.href='manage.html'">
+        Manage
+      </button>
+    </div>
+    
+    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; width: 100%;">
+      <input 
+        id="search-input"
+        type="text" 
+        placeholder="Type your location and you will see a sex patner around your area" 
+        style="flex: 1; padding: 1rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary); font-size: 1rem;"
+      />
+      <button class="btn btn-primary" style="padding: 1rem;" onclick="fetchHookups()">
+        Search
+      </button>
+    </div>
+
+    <h3 style="align-self: flex-start; margin-top: 1rem; color: #a78bfa;">Recent Hookups</h3>
+    <div id="hookups-container" style="width: 100%; display: flex; flex-direction: row; flex-wrap: wrap; gap: 1rem; justify-content: center; overflow: auto;">
+      <!-- Hookups injected here -->
+    </div>
+    
+    <button class="btn btn-outline" style="margin-top: 1rem; border-color: #ef4444; color: #ef4444;" onclick="handleLogout()">Logout</button>
+  </div>
+
+  <div id="gallery-overlay" class="overlay hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 1rem;" onclick="closeGallery()">
+    <div style="position: relative; max-width: 800px; width: 100%; display: flex; flex-direction: column; gap: 1rem; align-items: center;" onclick="event.stopPropagation()">
+      <button style="position: absolute; top: -3rem; right: 0; background: transparent; border: none; color: white; font-size: 2rem; cursor: pointer;" onclick="closeGallery()">&times;</button>
+      <div id="gallery-images" style="display: flex; gap: 1rem; overflow-x: auto; width: 100%; padding-bottom: 1rem; scroll-snap-type: x mandatory;">
+        <!-- Images injected here -->
+      </div>
+      <p style="color: #aaa; font-size: 0.9rem;">Scroll left/right to view all pictures</p>
+    </div>
+  </div>
+
+  <div id="upload-overlay" class="overlay hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 1rem;">
+    <div class="glass-card" style="padding: 2rem; max-width: 500px; width: 100%; text-align: left; overflow-y: auto; max-height: 90vh;">
+      <h2 style="margin-top: 0; font-size: 1.5rem; color: #a78bfa;">Upload My Hookup</h2>
+      <form id="hookup-form" onsubmit="handleHookupSubmit(event)" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;">
+        
+        <div>
+          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Name</label>
+          <input id="hookup-name" type="text" required style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary);" />
+        </div>
+
+        <div>
+          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Phone Number</label>
+          <input id="hookup-phone" type="tel" required style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary);" />
+        </div>
+
+        <div>
+          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Pictures (Please select exactly 3)</label>
+          <input id="hookup-pictures" type="file" accept="image/*" multiple required style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary);" onchange="if(this.files.length !== 3) { alert('Please select exactly 3 pictures.'); this.value = ''; }" />
+        </div>
+
+        <div>
+          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Location</label>
+          <input id="hookup-location" type="text" required style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary);" />
+        </div>
+
+        <div>
+          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Description of Services</label>
+          <textarea id="hookup-description" rows="4" required style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary); resize: vertical;"></textarea>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
+          <button id="btn-hookup-submit" type="submit" class="btn btn-primary" style="flex: 1; padding: 1rem;">Submit</button>
+          <button type="button" class="btn btn-secondary" style="flex: 1; padding: 1rem;" onclick="closeUploadForm()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from './supabase.js';
+
+    let currentUserSession = null;
+
+    async function checkAuth() {
+      if (sessionStorage.getItem('mycode_disclaimer_accepted') !== 'true') {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        window.location.href = 'index.html';
+        return;
+      }
+      currentUserSession = session;
+      const name = session.user.user_metadata?.username || session.user.email;
+      document.getElementById('display-name').textContent = name;
+      fetchHookups();
+      setupRealtime();
+    }
+
+    function setupRealtime() {
+      const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+      
+      supabase
+        .channel('public:hookups')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'hookups' }, payload => {
+          console.log('New hookup detected:', payload);
+          // Only play if the new hookup wasn't posted by the current user
+          if (payload.new.user_id !== currentUserSession.user.id) {
+            notificationSound.play().catch(e => console.warn('Audio blocked by browser:', e));
+            
+            const toast = document.getElementById('toast');
+            if (toast) {
+              toast.textContent = '🎉 A new hookup was just posted!';
+              toast.className = 'toast show';
+              setTimeout(() => { toast.className = 'toast hidden'; }, 4000);
+            }
+          }
+          // Refresh the list anyway
+          fetchHookups();
+        })
+        .subscribe();
+    }
+
+    window.fetchHookups = fetchHookups;
+    async function fetchHookups() {
+      const locationSearch = document.getElementById('search-input')?.value || '';
+      
+      let query = supabase.from('hookups').select(`
+        *,
+        hookup_likes ( user_id )
+      `).order('created_at', { ascending: false });
+
+      if (locationSearch.trim() !== '') {
+        query = query.ilike('location', locationSearch.trim());
+      }
+
+      const { data, error } = await query;
+
+      const container = document.getElementById('hookups-container');
+      
+      if (error) {
+        console.error('Error fetching hookups', error);
+        container.innerHTML = `<p style="color: #ef4444; text-align: left;">Database Error: ${error.message}. <br><br>Did you forget to run the SQL query from the plan to create the hookup_likes table?</p>`;
+        return;
+      }
+      
+      container.innerHTML = '';
+      if (data.length === 0) {
+        container.innerHTML = '<p style="color: #9ca3af; text-align: left;">No hookups found.</p>';
+        return;
+      }
+      
+      data.forEach(hookup => {
+        const card = document.createElement('div');
+        card.style.cssText = 'background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; text-align: left; position: relative; cursor: pointer; transition: transform 0.2s; min-width: 280px; flex: 1;';
+        card.onmouseover = () => card.style.transform = 'scale(1.02)';
+        card.onmouseout = () => card.style.transform = 'scale(1)';
+        
+        // Pass the pictures array to the gallery function
+        card.onclick = () => openGallery(hookup.pictures);
+
+        const imagesHtml = hookup.pictures.map(url => `<img src="${url}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px;" />`).join('');
+
+        const likes = hookup.hookup_likes || [];
+        const likeCount = likes.length;
+        const userLiked = likes.some(l => l.user_id === currentUserSession.user.id);
+        const heartColor = userLiked ? '#ef4444' : '#ffffff';
+
+        card.innerHTML = `
+          <h4 style="color: var(--accent-light); margin-bottom: 0.5rem; font-size: 1.2rem;">${hookup.name}</h4>
+          <p style="font-size: 0.9rem; margin-bottom: 0.2rem; color: var(--text-primary);"><strong>📍 Location:</strong> ${hookup.location}</p>
+          <p style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-primary);"><strong>📞 Phone:</strong> ${hookup.phone}</p>
+          <p style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-muted);">${hookup.description}</p>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">${imagesHtml}</div>
+          <div style="position: absolute; top: 1rem; right: 1rem; display: flex; align-items: center; gap: 0.3rem; cursor: pointer; user-select: none;" onclick="event.stopPropagation(); toggleLike('${hookup.id}', ${userLiked})">
+            <span style="color: ${heartColor}; font-size: 1.2rem;">❤️</span>
+            <span style="color: #ccc; font-size: 0.9rem; font-weight: bold;">${likeCount}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    window.openGallery = function(pictures) {
+      const overlay = document.getElementById('gallery-overlay');
+      const galleryImages = document.getElementById('gallery-images');
+      
+      galleryImages.innerHTML = pictures.map(url => 
+        `<img src="${url}" style="height: 60vh; max-width: 90vw; object-fit: contain; border-radius: 8px; scroll-snap-align: center; flex-shrink: 0;" />`
+      ).join('');
+      
+      overlay.classList.remove('hidden');
+      overlay.style.display = 'flex';
+    }
+
+    window.closeGallery = function() {
+      const overlay = document.getElementById('gallery-overlay');
+      overlay.classList.add('hidden');
+      overlay.style.display = 'none';
+    }
+
+    window.toggleLike = async function(hookupId, currentlyLiked) {
+      if (currentlyLiked) {
+        await supabase.from('hookup_likes').delete().match({ hookup_id: hookupId, user_id: currentUserSession.user.id });
+      } else {
+        await supabase.from('hookup_likes').insert([{ hookup_id: hookupId, user_id: currentUserSession.user.id }]);
+      }
+      fetchHookups(); // Refresh the list
+    }
+
+    window.handleLogout = async function() {
+      await supabase.auth.signOut();
+      window.location.href = 'index.html';
+    }
+
+    window.openUploadForm = function() {
+      const overlay = document.getElementById('upload-overlay');
+      overlay.classList.remove('hidden');
+      overlay.style.display = 'flex';
+    }
+
+    window.closeUploadForm = function() {
+      const overlay = document.getElementById('upload-overlay');
+      overlay.classList.add('hidden');
+      overlay.style.display = 'none';
+      document.getElementById('hookup-form').reset();
+    }
+
+    window.handleHookupSubmit = async function(event) {
+      event.preventDefault();
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        alert('You must be logged in to upload a hookup.');
+        return;
+      }
+
+      const name = document.getElementById('hookup-name').value;
+      const phone = document.getElementById('hookup-phone').value;
+      const location = document.getElementById('hookup-location').value;
+      const description = document.getElementById('hookup-description').value;
+      const picturesInput = document.getElementById('hookup-pictures');
+      const files = picturesInput.files;
+
+      if (files.length !== 3) {
+        alert('Please select exactly 3 pictures.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-hookup-submit');
+      btn.disabled = true;
+      btn.textContent = 'Uploading...';
+
+      try {
+        const pictureUrls = [];
+        
+        // 1. Upload 3 pictures to Storage
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${session.user.id}-${Date.now()}-${i}.${fileExt}`;
+          
+          const { data, error } = await supabase.storage
+            .from('hookups')
+            .upload(fileName, file);
+
+          if (error) throw error;
+          
+          const { data: publicData } = supabase.storage
+            .from('hookups')
+            .getPublicUrl(fileName);
+            
+          pictureUrls.push(publicData.publicUrl);
+        }
+
+        // 2. Insert record into Database
+        const { error: dbError } = await supabase
+          .from('hookups')
+          .insert([
+            {
+              user_id: session.user.id,
+              name,
+              phone,
+              location,
+              description,
+              pictures: pictureUrls
+            }
+          ]);
+
+        if (dbError) throw dbError;
+
+        alert('Hookup uploaded successfully!');
+        window.location.href = 'manage.html';
+        
+      } catch (error) {
+        console.error('Error uploading hookup:', error);
+        alert('Error: ' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Submit';
+      }
+    }
+
+    checkAuth();
+  </script>
+</body>
+</html>

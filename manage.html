@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage My Hookups</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { font-family: 'Inter', sans-serif; color: white; padding: 2rem; background: var(--bg-deep); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+  </style>
+  <script>
+    function getSavedTheme() { return localStorage.getItem('theme') || 'dark'; }
+    document.documentElement.setAttribute('data-theme', getSavedTheme());
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      document.getElementById('theme-toggle-btn').textContent = next === 'dark' ? '☀️' : '🌙';
+    }
+  </script>
+</head>
+<body>
+  <button id="theme-toggle-btn" class="btn btn-secondary" style="position: fixed; top: 1rem; right: 1rem; z-index: 10000; padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;" onclick="toggleTheme()">☀️</button>
+  <script>document.getElementById('theme-toggle-btn').textContent = getSavedTheme() === 'dark' ? '☀️' : '🌙';</script>
+  <div class="bg-particles" id="particles"></div>
+  <div style="max-width: 1200px; margin: 0 auto; width: 100%;">
+    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+      <h2 style="font-size: 2rem; color: var(--accent-light);">Manage My Hookups</h2>
+      <button class="btn btn-secondary" onclick="window.location.href='welcome.html'">Back to Welcome</button>
+    </header>
+    
+    <div id="hookups-grid" class="grid"></div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="edit-overlay" class="overlay hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 1rem;">
+    <div class="glass-card" style="padding: 2rem; max-width: 500px; width: 100%; text-align: left; overflow-y: auto; max-height: 90vh;">
+      <h2 style="margin-top: 0; font-size: 1.5rem; color: #a78bfa;">Edit Hookup Details</h2>
+      <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 1rem;">Note: To change pictures, please delete this hookup and upload a new one.</p>
+      
+      <form id="edit-form" style="display: flex; flex-direction: column; gap: 1rem;">
+        <input type="hidden" id="edit-id" />
+        
+        <div>
+          <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Name</label>
+          <input id="edit-name" type="text" required style="width: 100%; padding: 0.8rem; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary);" />
+        </div>
+        <div>
+          <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Phone</label>
+          <input id="edit-phone" type="tel" required style="width: 100%; padding: 0.8rem; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary);" />
+        </div>
+        <div>
+          <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Location</label>
+          <input id="edit-location" type="text" required style="width: 100%; padding: 0.8rem; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary);" />
+        </div>
+        <div>
+          <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Description</label>
+          <textarea id="edit-description" rows="4" required style="width: 100%; padding: 0.8rem; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary); resize: vertical;"></textarea>
+        </div>
+        
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
+          <button type="submit" id="btn-edit-submit" class="btn btn-primary" style="flex: 1; padding: 1rem;">Save Changes</button>
+          <button type="button" class="btn btn-secondary" style="flex: 1; padding: 1rem;" onclick="closeEdit()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from './supabase.js';
+    
+    let currentSession = null;
+    let hookupsData = [];
+
+    async function init() {
+      if (sessionStorage.getItem('mycode_disclaimer_accepted') !== 'true') {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        window.location.href = 'index.html';
+        return;
+      }
+      currentSession = session;
+      fetchHookups();
+    }
+
+    async function fetchHookups() {
+      const grid = document.getElementById('hookups-grid');
+      grid.innerHTML = '<p>Loading your hookups...</p>';
+      
+      const { data, error } = await supabase
+        .from('hookups')
+        .select('*')
+        .eq('user_id', currentSession.user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        grid.innerHTML = `<p style="color:red;">Error loading hookups: ${error.message}</p>`;
+        return;
+      }
+      
+      hookupsData = data;
+      grid.innerHTML = '';
+      
+      if (data.length === 0) {
+        grid.innerHTML = '<p style="color: #ccc;">You have not uploaded any hookups yet.</p>';
+        return;
+      }
+
+      data.forEach(h => {
+        const card = document.createElement('div');
+        card.className = 'glass-card';
+        card.style.cssText = 'padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;';
+        
+        const imgs = h.pictures.map(url => `<img src="${url}" style="width: 100%; height: 100px; object-fit: cover; border-radius: 8px;" />`).join('');
+
+        card.innerHTML = `
+          <div>
+            <h3 style="color: var(--accent-light); margin-bottom: 0.3rem;">${h.name}</h3>
+            <p style="font-size: 0.9rem; color: var(--text-primary);">📍 ${h.location}</p>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+            ${imgs}
+          </div>
+          <p style="font-size: 0.9rem; margin-top: 0.5rem; color: var(--text-primary);">📞 <strong>${h.phone}</strong></p>
+          <p style="font-size: 0.9rem; flex-grow: 1; color: var(--text-muted);">${h.description}</p>
+          
+          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: auto;">
+            <button class="btn btn-primary" style="flex: 1; padding: 0.7rem; font-size: 0.9rem;" onclick="openEdit('${h.id}')">Edit</button>
+            <button class="btn btn-outline" style="flex: 1; padding: 0.7rem; font-size: 0.9rem; border-color: #ef4444; color: #ef4444;" onclick="deleteHookup('${h.id}')">Delete</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    window.deleteHookup = async function(id) {
+      if (!confirm('Are you sure you want to delete this hookup? This cannot be undone.')) return;
+      
+      const hookup = hookupsData.find(h => h.id === id);
+      if (!hookup) return;
+
+      // 1. Delete images from storage
+      const fileNames = hookup.pictures.map(url => {
+        const parts = url.split('/');
+        return parts[parts.length - 1]; // get filename from url
+      });
+      
+      // We ignore storage delete errors since sometimes the file might already be missing
+      await supabase.storage.from('hookups').remove(fileNames);
+
+      // 2. Delete DB row
+      const { error } = await supabase.from('hookups').delete().eq('id', id);
+      
+      if (error) {
+        alert('Error deleting: ' + error.message);
+      } else {
+        fetchHookups();
+      }
+    }
+
+    window.openEdit = function(id) {
+      const hookup = hookupsData.find(h => h.id === id);
+      if (!hookup) return;
+      
+      document.getElementById('edit-id').value = hookup.id;
+      document.getElementById('edit-name').value = hookup.name;
+      document.getElementById('edit-phone').value = hookup.phone;
+      document.getElementById('edit-location').value = hookup.location;
+      document.getElementById('edit-description').value = hookup.description;
+      
+      const overlay = document.getElementById('edit-overlay');
+      overlay.classList.remove('hidden');
+      overlay.style.display = 'flex';
+    }
+
+    window.closeEdit = function() {
+      const overlay = document.getElementById('edit-overlay');
+      overlay.classList.add('hidden');
+      overlay.style.display = 'none';
+    }
+
+    document.getElementById('edit-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const id = document.getElementById('edit-id').value;
+      const name = document.getElementById('edit-name').value;
+      const phone = document.getElementById('edit-phone').value;
+      const location = document.getElementById('edit-location').value;
+      const description = document.getElementById('edit-description').value;
+      
+      const btn = document.getElementById('btn-edit-submit');
+      btn.textContent = 'Saving...';
+      btn.disabled = true;
+
+      const { error } = await supabase
+        .from('hookups')
+        .update({ name, phone, location, description })
+        .eq('id', id);
+
+      btn.textContent = 'Save Changes';
+      btn.disabled = false;
+
+      if (error) {
+        alert('Error updating: ' + error.message);
+      } else {
+        closeEdit();
+        fetchHookups();
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>

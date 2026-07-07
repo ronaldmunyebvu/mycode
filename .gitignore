@@ -1,0 +1,18 @@
+# Environment variables (contains Supabase secrets — never commit this!)
+.env
+.env.local
+.env.*.local
+
+# Vite build output
+dist/
+
+# Node modules
+node_modules/
+
+# Editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln

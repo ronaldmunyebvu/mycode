@@ -1,0 +1,17 @@
+{
+  "name": "mycode",
+  "version": "1.0.0",
+  "description": "MyCode — Premium Adult Social Platform",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.110.0"
+  }
+}
