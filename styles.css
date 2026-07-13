@@ -28,29 +28,6 @@
   --transition:    0.35s cubic-bezier(0.4,0,0.2,1);
 }
 
-:root[data-theme="light"] {
-  --bg-deep:       #f9fafb;
-  --bg-mid:        #f3f4f6;
-  --accent:        #c026d3;
-  --accent-2:      #7c3aed;
-  --accent-light:  #9d174d;
-  --crimson:       #be123c;
-  --gold:          #d97706;
-  --text-primary:  #111827;
-  --text-muted:    #4b5563;
-  --glass-bg:      rgba(255,255,255,0.7);
-  --glass-border:  rgba(0,0,0,0.1);
-  --input-bg:      rgba(255,255,255,0.8);
-  --input-border:  rgba(0,0,0,0.2);
-  --shadow:        0 10px 40px rgba(0,0,0,0.1);
-}
-
-:root[data-theme="light"] body {
-  background-image:
-    radial-gradient(ellipse at 20% 10%, rgba(192,38,211,0.08) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 90%, rgba(124,58,237,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse at 50% 50%, rgba(190,18,60,0.04) 0%, transparent 70%);
-}
 
 html { scroll-behavior: smooth; }
 
@@ -606,14 +583,6 @@ body {
   .logo-text { font-size: 1.3rem; }
 
   /* Additional mobile tweaks */
-  .glass-card {
-    overflow-y: auto;
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 1rem !important;
-    height: auto !important;
-    min-height: 100vh;
-  }
   .auth-toggle-container {
     width: 100% !important;
     max-width: 100% !important;

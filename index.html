@@ -9,22 +9,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <script>
-    function getSavedTheme() { return localStorage.getItem('theme') || 'dark'; }
-    document.documentElement.setAttribute('data-theme', getSavedTheme());
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute('data-theme') || 'dark';
-      const next = current === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      document.getElementById('theme-toggle-btn').textContent = next === 'dark' ? '☀️' : '🌙';
-    }
-  </script>
 </head>
 <body>
   <div class="bg-slideshow"></div>
-  <button id="theme-toggle-btn" class="btn btn-secondary" style="position: fixed; top: 1rem; right: 1rem; z-index: 10000; padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;" onclick="toggleTheme()">☀️</button>
-  <script>document.getElementById('theme-toggle-btn').textContent = getSavedTheme() === 'dark' ? '☀️' : '🌙';</script>
 
   <!-- ===================== DISCLAIMER MODAL ===================== -->
   <div id="disclaimer-overlay" class="overlay active">
@@ -166,8 +153,6 @@ function checkManagerPass() {
         <span class="logo-text">Zim<span class="accent">pussy</span></span>
       </div>
       <div class="header-right">
-        <button class="btn btn-secondary" onclick="window.location.href='mymanager.html'">Manager</button>
-        <button class="btn btn-secondary" onclick="window.location.href='mymanager.html'">Manager</button>
         <button class="btn btn-secondary" onclick="window.location.href='mymanager.html'">Manager</button>
         <div id="visitor-badge" class="visitor-badge">
           <span class="visitor-icon">👁️</span>
