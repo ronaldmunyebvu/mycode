@@ -9,10 +9,13 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       color: white;
       font-family: 'Inter', sans-serif;
       text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-deep);
     }
     h1 {
       font-size: 3rem;
@@ -21,26 +24,13 @@
       color: #a78bfa;
     }
   </style>
-  <script>
-    function getSavedTheme() { return localStorage.getItem('theme') || 'dark'; }
-    document.documentElement.setAttribute('data-theme', getSavedTheme());
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute('data-theme') || 'dark';
-      const next = current === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      document.getElementById('theme-toggle-btn').textContent = next === 'dark' ? '☀️' : '🌙';
-    }
-  </script>
-  <script type="module" crossorigin src="/assets/welcome-XPYoRzG5.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/supabase-CWCdB8CA.js">
-  <link rel="stylesheet" crossorigin href="/assets/supabase-GTnbcBep.css">
+  <script type="module" crossorigin src="/assets/welcome-6hhYIxpT.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/supabase-DbdlIviU.js">
+  <link rel="stylesheet" crossorigin href="/assets/supabase-CU5ox_Ky.css">
 </head>
 <body>
-  <button id="theme-toggle-btn" class="btn btn-secondary" style="position: fixed; top: 1rem; right: 1rem; z-index: 10000; padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;" onclick="toggleTheme()">☀️</button>
-  <script>document.getElementById('theme-toggle-btn').textContent = getSavedTheme() === 'dark' ? '☀️' : '🌙';</script>
 
-  <div class="glass-card" style="padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; align-items: center; width: 100%; height: 100vh; margin: 0;">
+  <div class="glass-card" style="padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; align-items: center; width: 100%; min-height: 100vh; height: auto; margin: 0; border-radius: 0; border: none;">
     <h1 style="font-size: clamp(2rem, 5vw, 3rem);">Welcome <br><span class="username" id="display-name"></span></h1>
     
     <div style="display: flex; flex-wrap: wrap; gap: 1rem; width: 100%;">
