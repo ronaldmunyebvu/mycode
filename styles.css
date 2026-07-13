@@ -33,8 +33,11 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Inter', sans-serif;
-  background: none;
-  background-image: none;
+  background-color: var(--bg-deep);
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(192,38,211,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 90%, rgba(124,58,237,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 50%, rgba(190,18,60,0.08) 0%, transparent 70%);
   color: var(--text-primary);
   min-height: 100vh;
   overflow-x: hidden;
