@@ -96,9 +96,6 @@
           placeholder="🔍 Search by product name..." 
           onkeypress="if(event.key === 'Enter') fetchProducts()"
         />
-        <button class="btn btn-primary" style="padding: 0.9rem 2rem;" onclick="fetchProducts()">
-          Search
-        </button>
       </div>
       <div class="search-row">
         <input 
@@ -107,6 +104,11 @@
           placeholder="📍 Your current location (optional — shows nearby products first)" 
           onkeypress="if(event.key === 'Enter') fetchProducts()"
         />
+      </div>
+      <div class="search-row">
+        <button class="btn btn-primary" style="padding: 0.9rem 2rem; width: 100%;" onclick="fetchProducts()">
+          Search
+        </button>
       </div>
       <span class="location-hint">Enter your location to see nearby products first, or leave blank to search all.</span>
     </div>

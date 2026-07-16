@@ -45,30 +45,6 @@
         ⚙️ Manage My Ads
       </button>
     </div>
-    
-    <!-- SEARCH FIELDS -->
-    <div class="search-fields" style="max-width: 600px;">
-      <div class="search-row">
-        <input 
-          id="search-input"
-          type="text" 
-          placeholder="🔍 Search by product name..." 
-          onkeypress="if(event.key === 'Enter') fetchHookups()"
-        />
-        <button class="btn btn-primary" style="padding: 0.9rem 2rem;" onclick="fetchHookups()">
-          Search
-        </button>
-      </div>
-      <div class="search-row">
-        <input 
-          id="location-input"
-          type="text" 
-          placeholder="📍 Your current location (optional)" 
-          onkeypress="if(event.key === 'Enter') fetchHookups()"
-        />
-      </div>
-      <span class="location-hint">Enter location to see nearby products first.</span>
-    </div>
 
     <h3 class="section-title" style="align-self: flex-start;">Recent Advertised Products</h3>
     <div id="hookups-container" class="product-grid">
@@ -195,19 +171,10 @@
 
     window.fetchHookups = fetchHookups;
     async function fetchHookups() {
-      const nameSearch = (document.getElementById('search-input')?.value || '').trim();
-      const locationSearch = (document.getElementById('location-input')?.value || '').trim();
-      
-      let query = supabase.from('hookups').select(`
+      const { data, error } = await supabase.from('hookups').select(`
         *,
         hookup_likes ( user_id )
       `).order('created_at', { ascending: false });
-
-      if (nameSearch !== '') {
-        query = query.ilike('name', `%${nameSearch}%`);
-      }
-
-      const { data, error } = await query;
       const container = document.getElementById('hookups-container');
       
       if (error) {
@@ -222,18 +189,7 @@
         return;
       }
 
-      // Sort by location if user provided their location
-      let sortedData = data;
-      if (locationSearch !== '') {
-        const locLower = locationSearch.toLowerCase();
-        sortedData = [...data].sort((a, b) => {
-          const aMatch = (a.location || '').toLowerCase().includes(locLower) ? 0 : 1;
-          const bMatch = (b.location || '').toLowerCase().includes(locLower) ? 0 : 1;
-          return aMatch - bMatch;
-        });
-      }
-      
-      sortedData.forEach(p => {
+      data.forEach(p => {
         const card = document.createElement('div');
         card.className = 'product-card';
         card.onclick = () => openGallery(p.pictures);
@@ -245,11 +201,8 @@
         const userLiked = likes.some(l => l.user_id === currentUserSession.user.id);
         const heartColor = userLiked ? '#dc2626' : 'var(--text-muted)';
 
-        const isNearby = locationSearch !== '' && (p.location || '').toLowerCase().includes(locationSearch.toLowerCase());
-        const nearbyBadge = isNearby ? '<span style="background: var(--lime); color: var(--text-dark); font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 20px; font-weight: 600; margin-left: 0.5rem;">📍 NEARBY</span>' : '';
-
         card.innerHTML = `
-          <h4>${p.name}${nearbyBadge}</h4>
+          <h4>${p.name}</h4>
           <p class="product-meta">📍 <strong>Location:</strong> ${p.location}</p>
           <p class="product-meta">📞 <strong>Contact:</strong> ${p.phone}</p>
           <p class="product-desc">${p.description}</p>
