@@ -174,7 +174,7 @@
       const { data, error } = await supabase.from('hookups').select(`
         *,
         hookup_likes ( user_id )
-      `).order('created_at', { ascending: false });
+      `).eq('user_id', currentUserSession.user.id).order('created_at', { ascending: false });
       const container = document.getElementById('hookups-container');
       
       if (error) {
