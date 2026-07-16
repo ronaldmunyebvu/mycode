@@ -1,7 +1,7 @@
 /* ===================================================
-   MyCode — App Logic  (Supabase Auth Edition)
-   Handles: Disclaimer, Supabase Auth flow,
-            Visitor Counter, Particles, Toast
+   eShop — App Logic
+   Handles: Visitor Counter, Toast,
+            Supabase Auth, Products Fetching & Grid
    =================================================== */
 
 import { supabase } from './supabase.js'
@@ -31,86 +31,58 @@ function updateVisitorDisplays() {
 }
 
 // =============================================
-//  DISCLAIMER
+//  SESSION CHECK
 // =============================================
-const DISCLAIMER_KEY = 'mycode_disclaimer_accepted'
+async function checkSessionAndShow() {
+  if (!supabase) return;
+  const { data: { session } } = await supabase.auth.getSession()
+  const authBtn = document.getElementById('header-auth-btn')
+  const userMenu = document.getElementById('header-user-menu')
+  const usernameEl = document.getElementById('header-username')
 
-function initDisclaimer() {
-  const accepted = sessionStorage.getItem(DISCLAIMER_KEY)
-  if (accepted === 'true') {
-    hideDisclaimer()
-    checkSessionAndShow()
+  if (session) {
+    if (authBtn) authBtn.classList.add('hidden')
+    if (userMenu) {
+      userMenu.classList.remove('hidden')
+      userMenu.style.display = 'flex'
+    }
+    if (usernameEl) usernameEl.textContent = session.user.user_metadata?.username || session.user.email
   } else {
-    const overlay = document.getElementById('disclaimer-overlay')
-    overlay.classList.add('active')
+    if (authBtn) authBtn.classList.remove('hidden')
+    if (userMenu) {
+      userMenu.classList.add('hidden')
+      userMenu.style.display = 'none'
+    }
+  }
+}
+
+// =============================================
+//  AUTH MODALS & NAVIGATION
+// =============================================
+window.showAuthModal = function() {
+  const overlay = document.getElementById('auth-overlay')
+  if (overlay) {
+    overlay.classList.remove('hidden')
     overlay.style.display = 'flex'
   }
 }
 
-function hideDisclaimer() {
-  const overlay = document.getElementById('disclaimer-overlay')
-  overlay.style.opacity = '0'
-  overlay.style.transition = 'opacity 0.5s'
-  setTimeout(() => {
+window.closeAuthModal = function() {
+  const overlay = document.getElementById('auth-overlay')
+  if (overlay) {
+    overlay.classList.add('hidden')
     overlay.style.display = 'none'
-    overlay.classList.remove('active')
-  }, 500)
-}
-
-window.acceptDisclaimer = function () {
-  sessionStorage.setItem(DISCLAIMER_KEY, 'true')
-  hideDisclaimer()
-  showAuthScreen()
-}
-
-// =============================================
-//  SESSION CHECK — auto-restore logged-in user
-// =============================================
-async function checkSessionAndShow() {
-  if (!supabase) {
-    showAuthScreen()
-    return
   }
+}
+
+window.handleAdvertiseClick = async function() {
   const { data: { session } } = await supabase.auth.getSession()
   if (session) {
     window.location.href = 'welcome.html'
   } else {
-    showAuthScreen()
+    showToast('🔑 Please Login or Sign Up to advertise your products.')
+    window.showAuthModal()
   }
-}
-
-// =============================================
-//  SCREENS
-// =============================================
-function showAuthScreen() {
-  const auth = document.getElementById('auth-screen')
-  auth.classList.remove('hidden')
-  auth.classList.add('active')
-  auth.style.display = 'flex'
-  auth.style.animation = 'fadeIn 0.6s ease'
-  spawnParticles('particles')
-  updateVisitorDisplays()
-}
-
-function showDashboard(user) {
-  // Hide auth screen
-  const auth = document.getElementById('auth-screen')
-  auth.classList.add('hidden')
-  auth.style.display = 'none'
-
-  // Show dashboard
-  const dash = document.getElementById('dashboard-screen')
-  dash.classList.remove('hidden')
-  dash.classList.add('active')
-  dash.style.display = 'flex'
-  dash.style.animation = 'fadeIn 0.6s ease'
-
-  const nameEl = document.getElementById('welcome-username')
-  if (nameEl) nameEl.textContent = user.name || 'User'
-
-  spawnParticles('particles2')
-  updateVisitorDisplays()
-  animateOnlineCount()
 }
 
 // =============================================
@@ -136,7 +108,7 @@ window.showForm = function (type) {
 }
 
 // =============================================
-//  LOGIN  (Supabase signInWithPassword)
+//  LOGIN
 // =============================================
 window.handleLogin = async function (e) {
   e.preventDefault()
@@ -152,7 +124,6 @@ window.handleLogin = async function (e) {
     return
   }
 
-  // Show loading state
   const btn = document.getElementById('btn-login')
   btn.disabled = true
   btn.textContent = '⏳  Signing in…'
@@ -160,14 +131,11 @@ window.handleLogin = async function (e) {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
   btn.disabled = false
-  btn.innerHTML = '🔐 &nbsp;Login to MyCode'
+  btn.innerHTML = '🔐 &nbsp;Login to eShop'
 
   if (error) {
-    // Supabase returns a clear error message — show it to the user
     if (error.message.toLowerCase().includes('invalid')) {
       showToast('❌ Incorrect email or password.')
-    } else if (error.message.toLowerCase().includes('not found') || error.message.toLowerCase().includes('no user')) {
-      showToast('❌ No account found with that email.')
     } else {
       showToast('❌ ' + error.message)
     }
@@ -176,11 +144,12 @@ window.handleLogin = async function (e) {
 
   const name = data.user.user_metadata?.username || data.user.email
   showToast('✅ Welcome back, ' + name + '!')
+  window.closeAuthModal()
   setTimeout(() => window.location.href = 'welcome.html', 800)
 }
 
 // =============================================
-//  SIGN UP  (Supabase signUp)
+//  SIGN UP
 // =============================================
 window.handleSignup = async function (e) {
   e.preventDefault()
@@ -206,7 +175,6 @@ window.handleSignup = async function (e) {
     return
   }
 
-  // Show loading state
   const btn = document.getElementById('btn-signup')
   btn.disabled = true
   btn.textContent = '⏳  Creating account…'
@@ -215,7 +183,7 @@ window.handleSignup = async function (e) {
     email,
     password,
     options: {
-      data: { username },       // stored in user_metadata
+      data: { username },
     },
   })
 
@@ -223,59 +191,151 @@ window.handleSignup = async function (e) {
   btn.innerHTML = '🚀 &nbsp;Create My Account'
 
   if (error) {
-    if (error.message.toLowerCase().includes('already registered')) {
-      showToast('❌ An account with that email already exists.')
-    } else {
-      showToast('❌ ' + error.message)
-    }
+    showToast('❌ ' + error.message)
     return
   }
 
-  // Supabase may require email confirmation (depends on your project settings)
   if (data.user && data.session) {
-    // Email confirmation is OFF — user is logged in immediately
     showToast('🎉 Account created! Welcome, ' + username + '!')
+    window.closeAuthModal()
     setTimeout(() => window.location.href = 'welcome.html', 800)
   } else {
-    // Email confirmation is ON — ask user to verify
     showToast('📧 Check your email to confirm your account!')
   }
 }
 
 // =============================================
-//  LOGOUT  (Supabase signOut)
+//  LOGOUT
 // =============================================
 window.handleLogout = async function () {
   if (supabase) await supabase.auth.signOut()
-
-  const dash = document.getElementById('dashboard-screen')
-  dash.classList.add('hidden')
-  dash.style.display = 'none'
-  dash.classList.remove('active')
-
-  showAuthScreen()
   showToast('👋 You have been logged out.')
+  checkSessionAndShow()
+  fetchProducts()
 }
 
 // =============================================
-//  HOOKUP MODAL
+//  FETCH PRODUCTS (search by name + location sort)
 // =============================================
-window.openHookup = function () {
-  const overlay = document.getElementById('hookup-overlay')
+async function fetchProducts() {
+  const container = document.getElementById('products-container')
+  if (!container) return
+
+  container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">Loading available products...</p>'
+  
+  const nameSearch = (document.getElementById('search-input')?.value || '').trim()
+  const locationSearch = (document.getElementById('location-input')?.value || '').trim()
+
+  // Build query — filter by product name if provided
+  let query = supabase.from('hookups').select(`
+    *,
+    hookup_likes ( user_id )
+  `).order('created_at', { ascending: false })
+
+  if (nameSearch !== '') {
+    query = query.ilike('name', `%${nameSearch}%`)
+  }
+
+  const { data, error } = await query
+  if (error) {
+    container.innerHTML = `<p style="color: #dc2626; text-align: center; padding: 2rem;">Error loading products: ${error.message}</p>`
+    return
+  }
+
+  container.innerHTML = ''
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">No products available at the moment.</p>'
+    return
+  }
+
+  // Sort by location if user provided their location
+  // Products matching the user's location appear first
+  let sortedData = data
+  if (locationSearch !== '') {
+    const locLower = locationSearch.toLowerCase()
+    sortedData = [...data].sort((a, b) => {
+      const aMatch = (a.location || '').toLowerCase().includes(locLower) ? 0 : 1
+      const bMatch = (b.location || '').toLowerCase().includes(locLower) ? 0 : 1
+      return aMatch - bMatch
+    })
+  }
+
+  const { data: { session } } = await supabase.auth.getSession()
+
+  sortedData.forEach(p => {
+    const card = document.createElement('div')
+    card.className = 'product-card'
+    card.onclick = () => window.openGallery(p.pictures)
+
+    const imagesHtml = (p.pictures || []).map(url => `<img src="${url}" />`).join('')
+
+    const likes = p.hookup_likes || []
+    const likeCount = likes.length
+    const userLiked = session ? likes.some(l => l.user_id === session.user.id) : false
+    const heartColor = userLiked ? '#dc2626' : 'var(--text-muted)'
+
+    // Highlight if product is near user's location
+    const isNearby = locationSearch !== '' && (p.location || '').toLowerCase().includes(locationSearch.toLowerCase())
+    const nearbyBadge = isNearby ? '<span style="background: var(--lime); color: var(--text-dark); font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 20px; font-weight: 600; margin-left: 0.5rem;">📍 NEARBY</span>' : ''
+
+    card.innerHTML = `
+      <div>
+        <h4>${p.name}${nearbyBadge}</h4>
+        <p class="product-meta">📍 <strong>Location:</strong> ${p.location}</p>
+        <p class="product-meta">📞 <strong>Contact:</strong> ${p.phone}</p>
+      </div>
+      <p class="product-desc">${p.description}</p>
+      <div class="product-images">${imagesHtml}</div>
+      <div class="like-btn" onclick="event.stopPropagation(); window.toggleLike('${p.id}', ${userLiked})">
+        <span style="color: ${heartColor}; font-size: 1.1rem;">❤️</span>
+        <span style="color: var(--text-body); font-size: 0.85rem; font-weight: bold;">${likeCount}</span>
+      </div>
+    `
+    container.appendChild(card)
+  })
+}
+window.fetchProducts = fetchProducts
+
+// =============================================
+//  LIKE TOGGLE
+// =============================================
+window.toggleLike = async function(hookupId, currentlyLiked) {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) {
+    showToast('⚠️ Please login to like products.')
+    window.showAuthModal()
+    return
+  }
+  if (currentlyLiked) {
+    await supabase.from('hookup_likes').delete().match({ hookup_id: hookupId, user_id: session.user.id })
+  } else {
+    await supabase.from('hookup_likes').insert([{ hookup_id: hookupId, user_id: session.user.id }])
+  }
+  fetchProducts()
+}
+
+// =============================================
+//  GALLERY OVERLAYS
+// =============================================
+window.openGallery = function(pictures) {
+  const overlay = document.getElementById('gallery-overlay')
+  const galleryImages = document.getElementById('gallery-images')
+  if (!overlay || !galleryImages) return
+  
+  galleryImages.innerHTML = (pictures || []).map(url => 
+    `<img src="${url}" style="height: 60vh; max-width: 90vw; object-fit: contain; border-radius: 8px; scroll-snap-align: center; flex-shrink: 0;" />`
+  ).join('')
+  
   overlay.classList.remove('hidden')
   overlay.style.display = 'flex'
-  overlay.style.animation = 'fadeIn 0.4s ease'
 }
 
-window.closeHookup = function () {
-  const overlay = document.getElementById('hookup-overlay')
-  overlay.style.opacity = '0'
-  overlay.style.transition = 'opacity 0.3s'
-  setTimeout(() => {
-    overlay.style.display = 'none'
+window.closeGallery = function() {
+  const overlay = document.getElementById('gallery-overlay')
+  if (overlay) {
     overlay.classList.add('hidden')
-    overlay.style.opacity = ''
-  }, 300)
+    overlay.style.display = 'none'
+  }
 }
 
 // =============================================
@@ -284,6 +344,7 @@ window.closeHookup = function () {
 let toastTimer = null
 function showToast(message) {
   const toast = document.getElementById('toast')
+  if (!toast) return
   toast.textContent = message
   toast.classList.remove('hidden')
   toast.classList.add('show')
@@ -296,78 +357,21 @@ function showToast(message) {
 }
 
 // =============================================
-//  ANIMATED ONLINE COUNT
-// =============================================
-function animateOnlineCount() {
-  const el = document.getElementById('online-count')
-  if (!el) return
-  const target  = Math.floor(Math.random() * 500) + 900
-  let   current = 0
-  const step    = Math.ceil(target / 60)
-  const timer   = setInterval(() => {
-    current = Math.min(current + step, target)
-    el.textContent = current.toLocaleString()
-    if (current >= target) clearInterval(timer)
-  }, 20)
-}
-
-// =============================================
-//  PARTICLE EFFECT
-// =============================================
-function spawnParticles(containerId) {
-  const container = document.getElementById(containerId)
-  if (!container) return
-  container.innerHTML = ''
-
-  const colors = ['#c026d3', '#7c3aed', '#be123c', '#f59e0b', '#e879f9']
-  const count  = window.innerWidth > 600 ? 22 : 10
-
-  for (let i = 0; i < count; i++) {
-    const p     = document.createElement('div')
-    const size  = Math.random() * 8 + 3
-    const left  = Math.random() * 100
-    const delay = Math.random() * 8
-    const dur   = Math.random() * 10 + 8
-    const color = colors[Math.floor(Math.random() * colors.length)]
-
-    p.style.cssText = `
-      position: absolute;
-      width: ${size}px;
-      height: ${size}px;
-      left: ${left}%;
-      bottom: -20px;
-      background: ${color};
-      border-radius: 50%;
-      opacity: 0;
-      animation: floatParticle ${dur}s ${delay}s ease-in infinite;
-      filter: blur(${size > 7 ? 2 : 0}px);
-    `
-    container.appendChild(p)
-  }
-}
-
-// =============================================
 //  CLOSE OVERLAYS ON BACKDROP CLICK
 // =============================================
 document.addEventListener('click', function (e) {
-  const hookupOverlay = document.getElementById('hookup-overlay')
-  if (e.target === hookupOverlay) window.closeHookup()
+  const authOverlay = document.getElementById('auth-overlay')
+  const galleryOverlay = document.getElementById('gallery-overlay')
+  if (e.target === authOverlay) window.closeAuthModal()
+  if (e.target === galleryOverlay) window.closeGallery()
 })
 
 // =============================================
-//  LISTEN FOR AUTH STATE CHANGES (e.g. tab sync)
+//  LISTEN FOR AUTH STATE CHANGES
 // =============================================
 if (supabase) {
   supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT') {
-      const dash = document.getElementById('dashboard-screen')
-      if (dash && !dash.classList.contains('hidden')) {
-        dash.classList.add('hidden')
-        dash.style.display = 'none'
-        dash.classList.remove('active')
-        showAuthScreen()
-      }
-    }
+    checkSessionAndShow()
   })
 }
 
@@ -376,5 +380,6 @@ if (supabase) {
 // =============================================
 document.addEventListener('DOMContentLoaded', function () {
   initVisitorCounter()
-  initDisclaimer()
+  checkSessionAndShow()
+  fetchProducts()
 })

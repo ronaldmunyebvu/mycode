@@ -3,17 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin – Manage All Hookups</title>
+  <title>Admin — eShop Products</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <style>
-    body { font-family: 'Inter', sans-serif; color: var(--text-primary); background: var(--bg-deep); padding: 2rem; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 1.5rem; }
+    body { font-family: 'Inter', sans-serif; color: var(--text-body); background: var(--bg-white); padding: 2rem; }
   </style>
 </head>
 <body>
   <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;">
-    <h2 style="font-size:2rem;color:var(--accent-light);">All Hookups (Admin)</h2>
-    <button class="btn btn-secondary" onclick="window.location.href='welcome.html'">Back to Welcome</button>
+    <h2 style="font-size:2rem;color:var(--accent-navy); font-family: 'Playfair Display', serif;">All Products (Admin)</h2>
+    <button class="btn btn-secondary" onclick="window.location.href='welcome.html'">Back to Dashboard</button>
   </header>
   <div id="hookups-grid" class="grid"></div>
 
@@ -27,34 +29,34 @@
     }
     async function fetchAllHookups(){
       const grid=document.getElementById('hookups-grid');
-      grid.innerHTML='<p>Loading...</p>';
+      grid.innerHTML='<p style="color: var(--text-muted);">Loading...</p>';
       const {data,error}=await supabase.from('hookups').select('*').order('created_at',{ascending:false});
-      if(error){grid.innerHTML=`<p style="color:red;">Error loading: ${error.message}</p>`;return;}
+      if(error){grid.innerHTML=`<p style="color:#dc2626;">Error loading: ${error.message}</p>`;return;}
       allHookups=data;
-      if(data.length===0){grid.innerHTML='<p style="color:#ccc;">No hookups found.</p>';return;}
+      if(data.length===0){grid.innerHTML='<p style="color: var(--text-muted);">No products found.</p>';return;}
       grid.innerHTML='';
       data.forEach(h=>{
         const card=document.createElement('div');
         card.className='glass-card';
         card.style.cssText='padding:1.5rem;display:flex;flex-direction:column;gap:1rem;';
-        const imgs=h.pictures.map(url=>`<img src="${url}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;"/>`).join('');
+        const imgs=h.pictures.map(url=>`<img src="${url}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;border:1px solid var(--border-light);"/>`).join('');
         card.innerHTML=`
           <div>
-            <h3 style="color:var(--accent-light);margin-bottom:0.3rem;">${h.name}</h3>
-            <p style="font-size:0.9rem;color:var(--text-primary);">📍 ${h.location}</p>
+            <h3 style="color:var(--accent-navy);margin-bottom:0.3rem;font-family:'Playfair Display',serif;">${h.name}</h3>
+            <p style="font-size:0.9rem;color:var(--text-body);">📍 ${h.location}</p>
           </div>
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;">${imgs}</div>
-          <p style="font-size:0.9rem;margin-top:0.5rem;color:var(--text-primary);">📞 <strong>${h.phone}</strong></p>
+          <p style="font-size:0.9rem;margin-top:0.5rem;color:var(--text-body);">📞 <strong>${h.phone}</strong></p>
           <p style="font-size:0.9rem;color:var(--text-muted);">${h.description}</p>
           <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:auto;">
-            <button class="btn btn-outline" style="flex:1;padding:0.7rem;font-size:0.9rem;border-color:#ef4444;color:#ef4444;" onclick="deleteHookup('${h.id}')">Delete</button>
+            <button class="btn btn-outline" style="flex:1;padding:0.7rem;font-size:0.9rem;border-color:#dc2626;color:#dc2626;" onclick="deleteHookup('${h.id}')">Delete</button>
           </div>
         `;
         grid.appendChild(card);
       });
     }
     window.deleteHookup=async function(id){
-      if(!confirm('Delete this hookup? This cannot be undone.')) return;
+      if(!confirm('Delete this product? This cannot be undone.')) return;
       const hookup=allHookups.find(h=>h.id===id);
       if(hookup){
         const fileNames=hookup.pictures.map(url=>url.split('/').pop());
