@@ -275,6 +275,75 @@ window.handleForgotPassword = async function (e) {
 }
 
 // =============================================
+//  RESET PASSWORD (after clicking email link)
+// =============================================
+window.closeResetPassword = function () {
+  const overlay = document.getElementById('reset-overlay')
+  if (overlay) {
+    overlay.classList.add('hidden')
+    overlay.style.display = 'none'
+  }
+}
+
+window.handleResetPassword = async function (e) {
+  e.preventDefault()
+  if (!supabase) {
+    showToast('⚠️ Server connection unavailable. Please try again later.')
+    return
+  }
+  const password = document.getElementById('reset-password').value
+  const confirm  = document.getElementById('reset-confirm').value
+
+  if (!password || !confirm) {
+    showToast('⚠️ Please fill in all fields.')
+    return
+  }
+  if (password !== confirm) {
+    showToast('❌ Passwords do not match.')
+    return
+  }
+  if (password.length < 6) {
+    showToast('❌ Password must be at least 6 characters.')
+    return
+  }
+
+  const btn = document.getElementById('btn-reset')
+  btn.disabled = true
+  btn.textContent = '⏳  Updating…'
+
+  const { error } = await supabase.auth.updateUser({ password })
+
+  btn.disabled = false
+  btn.innerHTML = '🔒 &nbsp;Update Password'
+
+  if (error) {
+    showToast('❌ ' + error.message)
+    return
+  }
+
+  document.getElementById('reset-desc').textContent = '✅ Password updated successfully! You can now login with your new password.'
+  document.getElementById('reset-form').style.display = 'none'
+  showToast('✅ Password updated!')
+}
+
+function checkForResetToken() {
+  const hash = window.location.hash
+  if (hash && hash.includes('type=recovery')) {
+    const overlay = document.getElementById('reset-overlay')
+    if (overlay) {
+      overlay.classList.remove('hidden')
+      overlay.style.display = 'flex'
+      document.getElementById('reset-password').value = ''
+      document.getElementById('reset-confirm').value = ''
+      document.getElementById('reset-desc').textContent = 'Enter your new password below.'
+      document.getElementById('reset-form').style.display = 'block'
+      document.getElementById('reset-password').focus()
+    }
+    window.history.replaceState(null, '', window.location.pathname)
+  }
+}
+
+// =============================================
 //  FETCH PRODUCTS (search by name + location sort)
 // =============================================
 async function fetchProducts() {
@@ -442,4 +511,5 @@ document.addEventListener('DOMContentLoaded', function () {
   initVisitorCounter()
   checkSessionAndShow()
   fetchProducts()
+  checkForResetToken()
 })

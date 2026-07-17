@@ -232,6 +232,29 @@
     </div>
   </div>
 
+  <!-- ===================== RESET PASSWORD MODAL ===================== -->
+  <div id="reset-overlay" class="overlay hidden">
+    <div class="modal glass-card forgot-modal" onclick="event.stopPropagation()">
+      <h2 class="modal-title">Set New Password</h2>
+      <div class="divider"></div>
+      <p class="modal-text" id="reset-desc">Enter your new password below.</p>
+      <form id="reset-form" onsubmit="handleResetPassword(event)">
+        <div class="form-group">
+          <label for="reset-password">New Password</label>
+          <input id="reset-password" type="password" placeholder="Enter new password" required minlength="6" />
+        </div>
+        <div class="form-group">
+          <label for="reset-confirm">Confirm New Password</label>
+          <input id="reset-confirm" type="password" placeholder="Repeat new password" required minlength="6" />
+        </div>
+        <button type="submit" id="btn-reset" class="btn btn-primary full-width">
+          🔒 &nbsp;Update Password
+        </button>
+      </form>
+      <button class="btn btn-secondary full-width" style="margin-top: 0.75rem;" onclick="closeResetPassword()">Back to Login</button>
+    </div>
+  </div>
+
   <!-- Toast notification -->
   <div id="toast" class="toast hidden"></div>
 
