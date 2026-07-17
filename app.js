@@ -390,6 +390,7 @@ async function fetchProducts() {
   }
 
   const { data: { session } } = await supabase.auth.getSession()
+  const anonLikes = getAnonLikes()
 
   sortedData.forEach(p => {
     const card = document.createElement('div')
@@ -400,7 +401,9 @@ async function fetchProducts() {
 
     const likes = p.hookup_likes || []
     const likeCount = likes.length
-    const userLiked = session ? likes.some(l => l.user_id === session.user.id) : false
+    const userLiked = session
+      ? likes.some(l => l.user_id === session.user.id)
+      : anonLikes.includes(p.id)
     const heartColor = userLiked ? '#dc2626' : 'var(--text-muted)'
 
     // Highlight if product is near user's location
@@ -426,19 +429,38 @@ async function fetchProducts() {
 window.fetchProducts = fetchProducts
 
 // =============================================
-//  LIKE TOGGLE
+//  LIKE TOGGLE — works for both logged-in and anonymous users
 // =============================================
+const ANON_LIKES_KEY = 'eshop_anon_likes'
+
+function getAnonLikes() {
+  try { return JSON.parse(localStorage.getItem(ANON_LIKES_KEY) || '[]') }
+  catch { return [] }
+}
+
+function setAnonLikes(likes) {
+  localStorage.setItem(ANON_LIKES_KEY, JSON.stringify(likes))
+}
+
 window.toggleLike = async function(hookupId, currentlyLiked) {
   const { data: { session } } = await supabase.auth.getSession()
-  if (!session) {
-    showToast('⚠️ Please login to like products.')
-    window.showAuthModal()
-    return
-  }
-  if (currentlyLiked) {
-    await supabase.from('hookup_likes').delete().match({ hookup_id: hookupId, user_id: session.user.id })
+
+  if (session) {
+    // Logged-in user — save to database
+    if (currentlyLiked) {
+      await supabase.from('hookup_likes').delete().match({ hookup_id: hookupId, user_id: session.user.id })
+    } else {
+      await supabase.from('hookup_likes').insert([{ hookup_id: hookupId, user_id: session.user.id }])
+    }
   } else {
-    await supabase.from('hookup_likes').insert([{ hookup_id: hookupId, user_id: session.user.id }])
+    // Anonymous user — save to localStorage
+    const likes = getAnonLikes()
+    if (currentlyLiked) {
+      setAnonLikes(likes.filter(id => id !== hookupId))
+    } else {
+      likes.push(hookupId)
+      setAnonLikes(likes)
+    }
   }
   fetchProducts()
 }
