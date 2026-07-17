@@ -404,6 +404,7 @@ async function fetchProducts() {
     const userLiked = session
       ? likes.some(l => l.user_id === session.user.id)
       : anonLikes.includes(p.id)
+    const displayCount = userLiked && !session ? likeCount + 1 : likeCount
     const heartColor = userLiked ? '#dc2626' : 'var(--text-muted)'
 
     // Highlight if product is near user's location
@@ -420,7 +421,7 @@ async function fetchProducts() {
       <div class="product-images">${imagesHtml}</div>
       <div class="like-btn" onclick="event.stopPropagation(); window.toggleLike('${p.id}', ${userLiked})">
         <span style="color: ${heartColor}; font-size: 1.1rem;">❤️</span>
-        <span style="color: var(--text-body); font-size: 0.85rem; font-weight: bold;">${likeCount}</span>
+        <span style="color: var(--text-body); font-size: 0.85rem; font-weight: bold;">${displayCount}</span>
       </div>
     `
     container.appendChild(card)
