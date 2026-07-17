@@ -169,6 +169,7 @@
           <label for="login-password">Password</label>
           <input id="login-password" type="password" placeholder="••••••••" required />
         </div>
+        <p class="forgot-text"><a href="#" onclick="showForgotPassword()">Forgot Password?</a></p>
         <button type="submit" id="btn-login" class="btn btn-primary full-width">
           🔐 &nbsp;Login to eShop
         </button>
@@ -198,6 +199,25 @@
         </button>
         <p class="switch-text">Already have an account? <a href="#" onclick="showForm('login')">Login</a></p>
       </form>
+    </div>
+  </div>
+
+  <!-- ===================== FORGOT PASSWORD MODAL ===================== -->
+  <div id="forgot-overlay" class="overlay hidden" onclick="closeForgotPassword()">
+    <div class="modal glass-card forgot-modal" onclick="event.stopPropagation()">
+      <h2 class="modal-title">Reset Password</h2>
+      <div class="divider"></div>
+      <p class="modal-text" id="forgot-desc">Enter the email address you used to sign up and we'll send you a link to reset your password.</p>
+      <form id="forgot-form" onsubmit="handleForgotPassword(event)">
+        <div class="form-group">
+          <label for="forgot-email">Email Address</label>
+          <input id="forgot-email" type="email" placeholder="you@example.com" required />
+        </div>
+        <button type="submit" id="btn-forgot" class="btn btn-primary full-width">
+          📧 &nbsp;Send Reset Link
+        </button>
+      </form>
+      <button class="btn btn-secondary full-width" style="margin-top: 0.75rem;" onclick="closeForgotPassword()">Back to Login</button>
     </div>
   </div>
 

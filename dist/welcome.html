@@ -3,112 +3,134 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome</title>
+  <title>eShop Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
   <style>
     body {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      justify-content: flex-start;
       align-items: center;
       min-height: 100vh;
-      color: white;
+      color: var(--text-body);
       font-family: 'Inter', sans-serif;
       text-align: center;
       margin: 0;
       padding: 0;
-      background-color: var(--bg-deep);
-    }
-    h1 {
-      font-size: 3rem;
+      background-color: var(--bg-white);
     }
     .username {
-      color: #a78bfa;
+      color: var(--accent-navy);
     }
   </style>
-  <script type="module" crossorigin src="/assets/welcome-6hhYIxpT.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/supabase-DbdlIviU.js">
-  <link rel="stylesheet" crossorigin href="/assets/supabase-CU5ox_Ky.css">
+  <script type="module" crossorigin src="/assets/welcome-DOyVwu4J.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/supabase-Dn92yP5L.js">
+  <link rel="stylesheet" crossorigin href="/assets/supabase-CLizWuaK.css">
 </head>
 <body>
 
-  <div class="glass-card" style="padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; align-items: center; width: 100%; min-height: 100vh; height: auto; margin: 0; border-radius: 0; border: none;">
-    <h1 style="font-size: clamp(2rem, 5vw, 3rem);">Welcome <br><span class="username" id="display-name"></span></h1>
-    
-    <div style="display: flex; flex-wrap: wrap; gap: 1rem; width: 100%;">
-      <button class="btn btn-primary" style="flex: 1; font-size: 1rem; padding: 1rem;" onclick="openUploadForm()">
-        Upload Hookup
-      </button>
-      <button class="btn btn-secondary" style="flex: 1; font-size: 1rem; padding: 1rem;" onclick="window.location.href='manage.html'">
-        Manage
-      </button>
-    </div>
-    
-    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; width: 100%;">
-      <input 
-        id="search-input"
-        type="text" 
-        placeholder="Type your location and you will see a sex patner around your area" 
-        style="flex: 1; padding: 1rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary); font-size: 1rem;"
-      />
-      <button class="btn btn-primary" style="padding: 1rem;" onclick="fetchHookups()">
-        Search
-      </button>
-    </div>
-
-    <h3 style="align-self: flex-start; margin-top: 1rem; color: #a78bfa;">Recent Hookups</h3>
-    <div id="hookups-container" style="width: 100%; display: flex; flex-direction: row; flex-wrap: wrap; gap: 1rem; justify-content: center; overflow: auto;">
-      <!-- Hookups injected here -->
-    </div>
-    
-    <button class="btn btn-outline" style="margin-top: 1rem; border-color: #ef4444; color: #ef4444;" onclick="handleLogout()">Logout</button>
+  <!-- PROMO BANNER -->
+  <div class="promo-banner" style="width: 100%;">
+    🎉 Advertise your products for free on eShop — Reach buyers instantly!
   </div>
 
-  <div id="gallery-overlay" class="overlay hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 1rem;" onclick="closeGallery()">
+  <div class="glass-card" style="padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; align-items: center; width: 100%; max-width: 1200px; margin: 2rem auto; border-radius: var(--radius);">
+    <h1 style="font-size: clamp(1.8rem, 4vw, 2.5rem); color: var(--text-dark); font-family: 'Playfair Display', serif;">Welcome to <span class="username">eShop</span>, <br><span class="username" id="display-name"></span></h1>
+    
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem; width: 100%; max-width: 600px;">
+      <button class="btn btn-primary" style="flex: 1; font-size: 1rem; padding: 1rem;" onclick="openUploadForm()">
+        📢 Advertise Product
+      </button>
+      <button class="btn btn-secondary" style="flex: 1; font-size: 1rem; padding: 1rem;" onclick="window.location.href='manage.html'">
+        ⚙️ Manage My Ads
+      </button>
+    </div>
+
+    <h3 class="section-title" style="align-self: flex-start;">Recent Advertised Products</h3>
+    <div id="hookups-container" class="product-grid">
+      <!-- Products injected here -->
+    </div>
+    
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem;">
+      <button class="btn btn-secondary" onclick="window.location.href='index.html'">View Marketplace</button>
+      <button class="btn btn-outline" style="border-color: #dc2626; color: #dc2626;" onclick="handleLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" style="width: 100%;">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>🛒 eShop</h4>
+        <p>Your local marketplace for products on sale.</p>
+      </div>
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <a href="index.html">Home</a>
+        <a href="#" onclick="openUploadForm(); return false;">Advertise a Product</a>
+      </div>
+      <div class="footer-section">
+        <h4>Support</h4>
+        <a href="mailto:support@eshop.co.zw">support@eshop.co.zw</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 <span class="footer-brand">eShop</span>. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- GALLERY MODAL -->
+  <div id="gallery-overlay" class="overlay hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 1rem;" onclick="closeGallery()">
     <div style="position: relative; max-width: 800px; width: 100%; display: flex; flex-direction: column; gap: 1rem; align-items: center;" onclick="event.stopPropagation()">
       <button style="position: absolute; top: -3rem; right: 0; background: transparent; border: none; color: white; font-size: 2rem; cursor: pointer;" onclick="closeGallery()">&times;</button>
       <div id="gallery-images" style="display: flex; gap: 1rem; overflow-x: auto; width: 100%; padding-bottom: 1rem; scroll-snap-type: x mandatory;">
-        <!-- Images injected here -->
       </div>
-      <p style="color: #aaa; font-size: 0.9rem;">Scroll left/right to view all pictures</p>
+      <p style="color: #ccc; font-size: 0.9rem;">Scroll left/right to view all pictures</p>
     </div>
   </div>
 
-  <div id="upload-overlay" class="overlay hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 1rem;">
+  <!-- UPLOAD PRODUCT MODAL -->
+  <div id="upload-overlay" class="overlay hidden" style="position: fixed; inset: 0; background: var(--overlay-bg); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 1rem;">
     <div class="glass-card" style="padding: 2rem; max-width: 500px; width: 100%; text-align: left; overflow-y: auto; max-height: 90vh;">
-      <h2 style="margin-top: 0; font-size: 1.5rem; color: #a78bfa;">Upload My Hookup</h2>
+      <h2 style="margin-top: 0; font-size: 1.5rem; color: var(--accent-navy); font-family: 'Playfair Display', serif;">Advertise Product</h2>
       <form id="hookup-form" onsubmit="handleHookupSubmit(event)" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;">
         
         <div>
-          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Name</label>
-          <input id="hookup-name" type="text" required style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary);" />
+          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Product Title</label>
+          <input id="hookup-name" type="text" required placeholder="e.g. iPhone 15 Pro Max" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-dark); font-size: 0.9rem;" />
         </div>
 
         <div>
-          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Phone Number</label>
-          <input id="hookup-phone" type="tel" required style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary);" />
+          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Contact Number (WhatsApp)</label>
+          <input id="hookup-phone" type="tel" required placeholder="e.g. +263 77 123 4567" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-dark); font-size: 0.9rem;" />
         </div>
 
         <div>
-          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Pictures (Please select exactly 3)</label>
-          <input id="hookup-pictures" type="file" accept="image/*" multiple required style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary);" onchange="if(this.files.length !== 3) { alert('Please select exactly 3 pictures.'); this.value = ''; }" />
+          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Product Pictures (Please select exactly 3)</label>
+          <input id="hookup-pictures" type="file" accept="image/*" multiple required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-dark); font-size: 0.9rem;" onchange="if(this.files.length !== 3) { alert('Please select exactly 3 pictures.'); this.value = ''; }" />
         </div>
 
         <div>
-          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Location</label>
-          <input id="hookup-location" type="text" required style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary);" />
+          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Location / Delivery Area</label>
+          <input id="hookup-location" type="text" required placeholder="e.g. Harare CBD" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-dark); font-size: 0.9rem;" />
         </div>
 
         <div>
-          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Description of Services</label>
-          <textarea id="hookup-description" rows="4" required style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary); resize: vertical;"></textarea>
+          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Product Details / Description</label>
+          <textarea id="hookup-description" rows="4" required placeholder="Describe condition, price, delivery details..." style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-dark); font-size: 0.9rem; resize: vertical; font-family: 'Inter', sans-serif;"></textarea>
         </div>
 
         <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
-          <button id="btn-hookup-submit" type="submit" class="btn btn-primary" style="flex: 1; padding: 1rem;">Submit</button>
+          <button id="btn-hookup-submit" type="submit" class="btn btn-primary" style="flex: 1; padding: 1rem;">Post Advertisement</button>
           <button type="button" class="btn btn-secondary" style="flex: 1; padding: 1rem;" onclick="closeUploadForm()">Cancel</button>
         </div>
       </form>
     </div>
   </div>
+
+  <div id="toast" class="toast hidden"></div>
 
 </body>
 </html>

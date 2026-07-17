@@ -215,6 +215,66 @@ window.handleLogout = async function () {
 }
 
 // =============================================
+//  FORGOT PASSWORD
+// =============================================
+window.showForgotPassword = function () {
+  const authOverlay = document.getElementById('auth-overlay')
+  const forgotOverlay = document.getElementById('forgot-overlay')
+  if (authOverlay) {
+    authOverlay.classList.add('hidden')
+    authOverlay.style.display = 'none'
+  }
+  if (forgotOverlay) {
+    forgotOverlay.classList.remove('hidden')
+    forgotOverlay.style.display = 'flex'
+    document.getElementById('forgot-email').value = ''
+    document.getElementById('forgot-desc').textContent = "Enter the email address you used to sign up and we'll send you a link to reset your password."
+    document.getElementById('forgot-form').style.display = 'block'
+    document.getElementById('forgot-email').focus()
+  }
+}
+
+window.closeForgotPassword = function () {
+  const forgotOverlay = document.getElementById('forgot-overlay')
+  if (forgotOverlay) {
+    forgotOverlay.classList.add('hidden')
+    forgotOverlay.style.display = 'none'
+  }
+}
+
+window.handleForgotPassword = async function (e) {
+  e.preventDefault()
+  if (!supabase) {
+    showToast('⚠️ Server connection unavailable. Please try again later.')
+    return
+  }
+  const email = document.getElementById('forgot-email').value.trim()
+  if (!email) {
+    showToast('⚠️ Please enter your email address.')
+    return
+  }
+
+  const btn = document.getElementById('btn-forgot')
+  btn.disabled = true
+  btn.textContent = '⏳  Sending…'
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/index.html'
+  })
+
+  btn.disabled = false
+  btn.innerHTML = '📧 &nbsp;Send Reset Link'
+
+  if (error) {
+    showToast('❌ ' + error.message)
+    return
+  }
+
+  document.getElementById('forgot-desc').textContent = '✅ Reset link sent! Check your email inbox and follow the instructions to set a new password.'
+  document.getElementById('forgot-form').style.display = 'none'
+}
+
+// =============================================
 //  FETCH PRODUCTS (search by name + location sort)
 // =============================================
 async function fetchProducts() {

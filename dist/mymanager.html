@@ -3,49 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage My Hookups</title>
+  <title>Manager — eShop Products</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
   <style>
-    body { font-family: 'Inter', sans-serif; color: white; padding: 2rem; background: var(--bg-deep); }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 1.5rem; }
-    .btn-outline { background: transparent; border: 1px solid #ef4444; color: #ef4444; }
-    .btn-outline:hover { background: rgba(239,68,68,0.1); }
+    body { font-family: 'Inter', sans-serif; color: var(--text-body); padding: 2rem; background: var(--bg-white); }
   </style>
-  <script type="module" crossorigin src="/assets/mymanager-DcHwFPLc.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/supabase-DbdlIviU.js">
-  <link rel="stylesheet" crossorigin href="/assets/supabase-CU5ox_Ky.css">
+  <script type="module" crossorigin src="/assets/mymanager-DuRi2RCH.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/supabase-Dn92yP5L.js">
+  <link rel="stylesheet" crossorigin href="/assets/supabase-CLizWuaK.css">
 </head>
 <body>
-  <div class="bg-particles" id="particles"></div>
   <div style="max-width: 1200px; margin: 0 auto; width: 100%;">
     <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
-      <h2 style="font-size: 2rem; color: var(--accent-light);">Manage My Hookups</h2>
-      <button class="btn btn-secondary" onclick="window.location.href='welcome.html'">Back to Welcome</button>
+      <h2 style="font-size: 2rem; color: var(--accent-navy); font-family: 'Playfair Display', serif;">Manager — All Products</h2>
+      <button class="btn btn-secondary" onclick="window.location.href='welcome.html'">Back to Dashboard</button>
     </header>
     <div id="hookups-grid" class="grid"></div>
   </div>
 
   <!-- Edit Modal -->
-  <div id="edit-overlay" class="overlay hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 1rem;">
+  <div id="edit-overlay" class="overlay hidden" style="position: fixed; inset: 0; background: var(--overlay-bg); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 1rem;">
     <div class="glass-card" style="padding: 2rem; max-width: 500px; width: 100%; text-align: left; overflow-y: auto; max-height: 90vh;">
-      <h2 style="margin-top: 0; font-size: 1.5rem; color: #a78bfa;">Edit Hookup Details</h2>
-      <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 1rem;">Note: To change pictures, please delete this hookup and upload a new one.</p>
+      <h2 style="margin-top: 0; font-size: 1.5rem; color: var(--accent-navy); font-family: 'Playfair Display', serif;">Edit Product Details</h2>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Note: To change pictures, please delete this product and upload a new one.</p>
       <form id="edit-form" style="display: flex; flex-direction: column; gap: 1rem;">
         <input type="hidden" id="edit-id" />
         <div>
           <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Name</label>
-          <input id="edit-name" type="text" required style="width: 100%; padding: 0.8rem; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary);" />
+          <input id="edit-name" type="text" required style="width: 100%; padding: 0.8rem; border-radius: 8px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-dark); font-size: 0.9rem;" />
         </div>
         <div>
           <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Phone</label>
-          <input id="edit-phone" type="tel" required style="width: 100%; padding: 0.8rem; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary);" />
+          <input id="edit-phone" type="tel" required style="width: 100%; padding: 0.8rem; border-radius: 8px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-dark); font-size: 0.9rem;" />
         </div>
         <div>
           <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Location</label>
-          <input id="edit-location" type="text" required style="width: 100%; padding: 0.8rem; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary);" />
+          <input id="edit-location" type="text" required style="width: 100%; padding: 0.8rem; border-radius: 8px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-dark); font-size: 0.9rem;" />
         </div>
         <div>
           <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Description</label>
-          <textarea id="edit-description" rows="4" required style="width: 100%; padding: 0.8rem; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary); resize: vertical;"></textarea>
+          <textarea id="edit-description" rows="4" required style="width: 100%; padding: 0.8rem; border-radius: 8px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-dark); resize: vertical; font-family: 'Inter', sans-serif; font-size: 0.9rem;"></textarea>
         </div>
         <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
           <button type="submit" id="btn-edit-submit" class="btn btn-primary" style="flex: 1; padding: 1rem;">Save Changes</button>
