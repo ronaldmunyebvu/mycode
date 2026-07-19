@@ -108,6 +108,21 @@ window.showForm = function (type) {
 }
 
 // =============================================
+//  RESEND EMAIL API HELPER
+// =============================================
+async function callAuthEmailApi(type, email) {
+  try {
+    await fetch('/api/auth-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, email }),
+    })
+  } catch {
+    // Silently fail — Supabase may still handle the email
+  }
+}
+
+// =============================================
 //  LOGIN
 // =============================================
 window.handleLogin = async function (e) {
@@ -134,7 +149,12 @@ window.handleLogin = async function (e) {
   btn.innerHTML = '🔐 &nbsp;Login to eShop'
 
   if (error) {
-    if (error.message.toLowerCase().includes('invalid')) {
+    const msg = error.message.toLowerCase()
+    if (msg.includes('email not confirmed')) {
+      showToast('⚠️ Please verify your email first. Sending a new verification email…')
+      await callAuthEmailApi('signup', email)
+      showToast('📧 New verification email sent! Check your inbox.')
+    } else if (msg.includes('invalid')) {
       showToast('❌ Incorrect email or password.')
     } else {
       showToast('❌ ' + error.message)
@@ -200,7 +220,9 @@ window.handleSignup = async function (e) {
     window.closeAuthModal()
     setTimeout(() => window.location.href = 'welcome.html', 800)
   } else {
-    showToast('📧 Check your email to confirm your account!')
+    showToast('📧 Sending verification email via Resend…')
+    await callAuthEmailApi('signup', email)
+    showToast('📧 Check your email to verify your account!')
   }
 }
 
@@ -258,17 +280,10 @@ window.handleForgotPassword = async function (e) {
   btn.disabled = true
   btn.textContent = '⏳  Sending…'
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + '/index.html'
-  })
+  await callAuthEmailApi('reset', email)
 
   btn.disabled = false
   btn.innerHTML = '📧 &nbsp;Send Reset Link'
-
-  if (error) {
-    showToast('❌ ' + error.message)
-    return
-  }
 
   document.getElementById('forgot-desc').textContent = '✅ Reset link sent! Check your email inbox and follow the instructions to set a new password.'
   document.getElementById('forgot-form').style.display = 'none'
