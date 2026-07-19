@@ -7,7 +7,14 @@ const supabaseAdmin = createClient(
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
 const EMAIL_FROM = process.env.EMAIL_FROM || 'eShop <onboarding@resend.dev>'
-const SITE_URL = process.env.SITE_URL || 'https://zlvsxhcoxiswafpaqkpw.vercel.app'
+
+function getSiteUrl(req) {
+  const host = req.headers.host
+  if (host) return 'https://' + host
+  const origin = req.headers.origin || req.headers.referer || ''
+  if (origin) return origin.replace(/\/$/, '')
+  return process.env.SITE_URL || 'https://zlvsxhcoxiswafpaqkpw.vercel.app'
+}
 
 async function sendResend({ to, subject, html }) {
   const res = await fetch('https://api.resend.com/emails', {
@@ -75,12 +82,14 @@ export default async function handler(req, res) {
   const { type, email } = req.body || {}
   if (!type || !email) return res.status(400).json({ error: 'Missing type or email' })
 
+  const siteUrl = getSiteUrl(req)
+
   try {
     if (type === 'signup') {
       const { data, error } = await supabaseAdmin.auth.admin.generateLink({
         type: 'signup',
         email,
-        options: { redirectTo: SITE_URL + '/index.html' },
+        options: { redirectTo: siteUrl + '/index.html' },
       })
       if (error) throw error
 
@@ -99,7 +108,7 @@ export default async function handler(req, res) {
       const { data, error } = await supabaseAdmin.auth.admin.generateLink({
         type: 'recovery',
         email,
-        options: { redirectTo: SITE_URL + '/index.html' },
+        options: { redirectTo: siteUrl + '/index.html' },
       })
       if (error) return res.status(200).json({ success: true })
 
