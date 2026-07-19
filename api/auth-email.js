@@ -79,6 +79,15 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.RESEND_API_KEY) {
+    console.error('Missing env vars:', {
+      SUPABASE_URL: !!process.env.SUPABASE_URL,
+      SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      RESEND_API_KEY: !!process.env.RESEND_API_KEY,
+    })
+    return res.status(500).json({ error: 'Server not configured. Missing environment variables.' })
+  }
+
   const { type, email } = req.body || {}
   if (!type || !email) return res.status(400).json({ error: 'Missing type or email' })
 
@@ -91,7 +100,10 @@ export default async function handler(req, res) {
         email,
         options: { redirectTo: siteUrl + '/index.html' },
       })
-      if (error) throw error
+      if (error) {
+        console.error('generateLink signup error:', error.message)
+        throw error
+      }
 
       const link = data?.properties?.action_link
       if (!link) throw new Error('No link generated')
@@ -110,7 +122,10 @@ export default async function handler(req, res) {
         email,
         options: { redirectTo: siteUrl + '/index.html' },
       })
-      if (error) return res.status(200).json({ success: true })
+      if (error) {
+        console.error('generateLink reset error:', error.message)
+        return res.status(200).json({ success: true })
+      }
 
       const link = data?.properties?.action_link
       if (!link) return res.status(200).json({ success: true })
@@ -124,7 +139,8 @@ export default async function handler(req, res) {
     }
 
     return res.status(400).json({ error: 'Invalid type' })
-  } catch {
-    return res.status(200).json({ success: true })
+  } catch (err) {
+    console.error('Auth email error:', err.message)
+    return res.status(500).json({ error: err.message })
   }
 }

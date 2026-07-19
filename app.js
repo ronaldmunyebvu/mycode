@@ -112,13 +112,20 @@ window.showForm = function (type) {
 // =============================================
 async function callAuthEmailApi(type, email) {
   try {
-    await fetch('/api/auth-email', {
+    const res = await fetch('/api/auth-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type, email }),
     })
-  } catch {
-    // Silently fail — Supabase may still handle the email
+    const data = await res.json()
+    if (!res.ok || data.error) {
+      console.error('Auth email API error:', data.error || res.statusText)
+      return { error: data.error || 'Failed to send email' }
+    }
+    return { error: null }
+  } catch (err) {
+    console.error('Auth email API request failed:', err.message)
+    return { error: 'Could not reach email server' }
   }
 }
 
@@ -152,8 +159,12 @@ window.handleLogin = async function (e) {
     const msg = error.message.toLowerCase()
     if (msg.includes('email not confirmed')) {
       showToast('⚠️ Please verify your email first. Sending a new verification email…')
-      await callAuthEmailApi('signup', email)
-      showToast('📧 New verification email sent! Check your inbox.')
+      const emailResult = await callAuthEmailApi('signup', email)
+      if (emailResult.error) {
+        showToast('❌ Failed to send email: ' + emailResult.error)
+      } else {
+        showToast('📧 New verification email sent! Check your inbox.')
+      }
     } else if (msg.includes('invalid')) {
       showToast('❌ Incorrect email or password.')
     } else {
@@ -221,8 +232,12 @@ window.handleSignup = async function (e) {
     setTimeout(() => window.location.href = 'welcome.html', 800)
   } else {
     showToast('📧 Sending verification email via Resend…')
-    await callAuthEmailApi('signup', email)
-    showToast('📧 Check your email to verify your account!')
+    const emailResult = await callAuthEmailApi('signup', email)
+    if (emailResult.error) {
+      showToast('❌ Failed to send email: ' + emailResult.error)
+    } else {
+      showToast('📧 Check your email to verify your account!')
+    }
   }
 }
 
@@ -280,10 +295,15 @@ window.handleForgotPassword = async function (e) {
   btn.disabled = true
   btn.textContent = '⏳  Sending…'
 
-  await callAuthEmailApi('reset', email)
+  const emailResult = await callAuthEmailApi('reset', email)
 
   btn.disabled = false
   btn.innerHTML = '📧 &nbsp;Send Reset Link'
+
+  if (emailResult.error) {
+    showToast('❌ Failed to send email: ' + emailResult.error)
+    return
+  }
 
   document.getElementById('forgot-desc').textContent = '✅ Reset link sent! Check your email inbox and follow the instructions to set a new password.'
   document.getElementById('forgot-form').style.display = 'none'
