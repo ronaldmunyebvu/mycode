@@ -1,8 +1,15 @@
 {
   "outputDirectory": "dist",
-  "rewrites": [],
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" }
+  ],
   "redirects": [],
   "headers": [],
-  "cleanUrls":true,
-  "trailingSlash":false
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "functions": {
+    "api/auth-email.js": {
+      "maxDuration": 30
+    }
+  }
 }
