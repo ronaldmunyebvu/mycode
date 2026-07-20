@@ -6,130 +6,169 @@
   <title>eShop Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
-      min-height: 100vh;
-      color: var(--text-body);
-      font-family: 'Inter', sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-      background-color: var(--bg-white);
-    }
-    .username {
-      color: var(--accent-navy);
-    }
-  </style>
-  <script type="module" crossorigin src="/assets/welcome-DOyVwu4J.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/supabase-Dn92yP5L.js">
-  <link rel="stylesheet" crossorigin href="/assets/supabase-CLizWuaK.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script type="module" crossorigin src="/assets/welcome-CBvkAEQt.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/supabase-BqW-PtAq.js">
+  <link rel="stylesheet" crossorigin href="/assets/supabase-CHk9xlyz.css">
 </head>
 <body>
 
-  <!-- PROMO BANNER -->
-  <div class="promo-banner" style="width: 100%;">
-    🎉 Advertise your products for free on eShop — Reach buyers instantly!
-  </div>
+  <!-- ===================== HEADER ===================== -->
+  <header class="amz-header">
+    <div class="amz-header-inner">
+      <a href="index.html" class="amz-logo">
+        <span class="amz-logo-text">e<span class="amz-logo-accent">Shop</span></span>
+        <span class="amz-logo-tagline">.co.zw</span>
+      </a>
 
-  <div class="glass-card" style="padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; align-items: center; width: 100%; max-width: 1200px; margin: 2rem auto; border-radius: var(--radius);">
-    <h1 style="font-size: clamp(1.8rem, 4vw, 2.5rem); color: var(--text-dark); font-family: 'Playfair Display', serif;">Welcome to <span class="username">eShop</span>, <br><span class="username" id="display-name"></span></h1>
-    
-    <div style="display: flex; flex-wrap: wrap; gap: 1rem; width: 100%; max-width: 600px;">
-      <button class="btn btn-primary" style="flex: 1; font-size: 1rem; padding: 1rem;" onclick="openUploadForm()">
-        📢 Advertise Product
-      </button>
-      <button class="btn btn-secondary" style="flex: 1; font-size: 1rem; padding: 1rem;" onclick="window.location.href='manage.html'">
-        ⚙️ Manage My Ads
-      </button>
+      <div class="amz-search-bar">
+        <select id="category-select" class="amz-search-category">
+          <option value="all">All Categories</option>
+        </select>
+        <input
+          id="search-input"
+          type="text"
+          class="amz-search-input"
+          placeholder="Search your products..."
+          onkeypress="if(event.key === 'Enter') fetchHookups()"
+        />
+        <button class="amz-search-btn" onclick="fetchHookups()">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
+
+      <div class="amz-header-right">
+        <div id="header-user-area">
+          <button class="amz-header-link" onclick="window.location.href='index.html'">
+            <span class="amz-header-label">Browse</span>
+            <span class="amz-header-value">Marketplace</span>
+          </button>
+          <button class="amz-header-link" onclick="handleLogout()">
+            <span class="amz-header-value" style="color:#f0c14b;">Logout</span>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <h3 class="section-title" style="align-self: flex-start;">Recent Advertised Products</h3>
-    <div id="hookups-container" class="product-grid">
+    <div class="amz-category-bar" id="category-bar">
+      <button class="amz-category-item active" data-category="all" onclick="filterByCategory('all')">All</button>
+    </div>
+  </header>
+
+  <!-- ===================== DASHBOARD MAIN ===================== -->
+  <main class="amz-main">
+
+    <!-- Welcome Section -->
+    <div class="amz-dashboard-welcome">
+      <div class="amz-dashboard-welcome-text">
+        <h1>Welcome, <span id="display-name"></span></h1>
+        <p>Manage your advertised products and discover new opportunities.</p>
+      </div>
+      <div class="amz-dashboard-actions">
+        <button class="amz-btn amz-btn-orange" onclick="openUploadForm()">
+          + Advertise Product
+        </button>
+        <button class="amz-btn amz-btn-secondary" onclick="window.location.href='manage.html'">
+          Manage My Ads
+        </button>
+      </div>
+    </div>
+
+    <!-- Results bar -->
+    <div class="amz-results-bar">
+      <span id="results-count" class="amz-results-count"></span>
+      <div class="amz-sort-area">
+        <label for="sort-select" class="amz-sort-label">Sort by:</label>
+        <select id="sort-select" class="amz-sort-select" onchange="fetchHookups()">
+          <option value="newest">Newest</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="rating">Rating</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div id="hookups-container" class="amz-product-grid">
       <!-- Products injected here -->
     </div>
-    
-    <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem;">
-      <button class="btn btn-secondary" onclick="window.location.href='index.html'">View Marketplace</button>
-      <button class="btn btn-outline" style="border-color: #dc2626; color: #dc2626;" onclick="handleLogout()">Logout</button>
-    </div>
-  </div>
 
-  <!-- FOOTER -->
-  <footer class="site-footer" style="width: 100%;">
-    <div class="footer-content">
-      <div class="footer-section">
-        <h4>🛒 eShop</h4>
-        <p>Your local marketplace for products on sale.</p>
-      </div>
-      <div class="footer-section">
-        <h4>Quick Links</h4>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="amz-footer">
+    <button class="amz-back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to top</button>
+    <div class="amz-footer-grid">
+      <div class="amz-footer-col">
+        <h4>Get to Know Us</h4>
         <a href="index.html">Home</a>
-        <a href="#" onclick="openUploadForm(); return false;">Advertise a Product</a>
+        <a href="#" onclick="openUploadForm(); return false;">Advertise on eShop</a>
       </div>
-      <div class="footer-section">
-        <h4>Support</h4>
-        <a href="mailto:support@eshop.co.zw">support@eshop.co.zw</a>
+      <div class="amz-footer-col">
+        <h4>Make Money with Us</h4>
+        <a href="#" onclick="openUploadForm(); return false;">Sell on eShop</a>
+        <a href="#">Manage Your Ads</a>
+      </div>
+      <div class="amz-footer-col">
+        <h4>Help & Support</h4>
+        <a href="mailto:support@eshop.co.zw">Email Support</a>
       </div>
     </div>
-    <div class="footer-bottom">
-      <p>&copy; 2024 <span class="footer-brand">eShop</span>. All rights reserved.</p>
+    <div class="amz-footer-bottom">
+      <span class="amz-footer-logo">e<span>Shop</span></span>
+      <span>&copy; 2024 eShop. All rights reserved.</span>
     </div>
   </footer>
 
-  <!-- GALLERY MODAL -->
-  <div id="gallery-overlay" class="overlay hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 1rem;" onclick="closeGallery()">
-    <div style="position: relative; max-width: 800px; width: 100%; display: flex; flex-direction: column; gap: 1rem; align-items: center;" onclick="event.stopPropagation()">
-      <button style="position: absolute; top: -3rem; right: 0; background: transparent; border: none; color: white; font-size: 2rem; cursor: pointer;" onclick="closeGallery()">&times;</button>
-      <div id="gallery-images" style="display: flex; gap: 1rem; overflow-x: auto; width: 100%; padding-bottom: 1rem; scroll-snap-type: x mandatory;">
-      </div>
-      <p style="color: #ccc; font-size: 0.9rem;">Scroll left/right to view all pictures</p>
+  <!-- ===================== GALLERY MODAL ===================== -->
+  <div id="gallery-overlay" class="overlay hidden" onclick="closeGallery()">
+    <div class="amz-gallery-inner" onclick="event.stopPropagation()">
+      <button class="amz-gallery-close" onclick="closeGallery()">&times;</button>
+      <div id="gallery-images" class="amz-gallery-images"></div>
+      <p class="amz-gallery-hint">Scroll left/right to view all pictures</p>
     </div>
   </div>
 
-  <!-- UPLOAD PRODUCT MODAL -->
-  <div id="upload-overlay" class="overlay hidden" style="position: fixed; inset: 0; background: var(--overlay-bg); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 1rem;">
-    <div class="glass-card" style="padding: 2rem; max-width: 500px; width: 100%; text-align: left; overflow-y: auto; max-height: 90vh;">
-      <h2 style="margin-top: 0; font-size: 1.5rem; color: var(--accent-navy); font-family: 'Playfair Display', serif;">Advertise Product</h2>
-      <form id="hookup-form" onsubmit="handleHookupSubmit(event)" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;">
-        
-        <div>
-          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Product Title</label>
-          <input id="hookup-name" type="text" required placeholder="e.g. iPhone 15 Pro Max" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-dark); font-size: 0.9rem;" />
+  <!-- ===================== UPLOAD PRODUCT MODAL ===================== -->
+  <div id="upload-overlay" class="overlay hidden" onclick="closeUploadForm()">
+    <div class="amz-modal" style="max-width: 520px; max-height: 90vh; overflow-y: auto; text-align: left;" onclick="event.stopPropagation()">
+      <h2 class="amz-modal-title">Advertise Product</h2>
+      <form id="hookup-form" onsubmit="handleHookupSubmit(event)" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+
+        <div class="amz-form-group">
+          <label>Product Title</label>
+          <input id="hookup-name" type="text" required placeholder="e.g. iPhone 15 Pro Max" />
         </div>
 
-        <div>
-          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Contact Number (WhatsApp)</label>
-          <input id="hookup-phone" type="tel" required placeholder="e.g. +263 77 123 4567" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-dark); font-size: 0.9rem;" />
+        <div class="amz-form-group">
+          <label>Contact Number (WhatsApp)</label>
+          <input id="hookup-phone" type="tel" required placeholder="e.g. +263 77 123 4567" />
         </div>
 
-        <div>
-          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Product Pictures (Please select exactly 3)</label>
-          <input id="hookup-pictures" type="file" accept="image/*" multiple required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-dark); font-size: 0.9rem;" onchange="if(this.files.length !== 3) { alert('Please select exactly 3 pictures.'); this.value = ''; }" />
+        <div class="amz-form-group">
+          <label>Product Pictures (Please select exactly 3)</label>
+          <input id="hookup-pictures" type="file" accept="image/*" multiple required style="padding: 0.5rem;" onchange="if(this.files.length !== 3) { alert('Please select exactly 3 pictures.'); this.value = ''; }" />
         </div>
 
-        <div>
-          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Location / Delivery Area</label>
-          <input id="hookup-location" type="text" required placeholder="e.g. Harare CBD" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-dark); font-size: 0.9rem;" />
+        <div class="amz-form-group">
+          <label>Location / Delivery Area</label>
+          <input id="hookup-location" type="text" required placeholder="e.g. Harare CBD" />
         </div>
 
-        <div>
-          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Product Details / Description</label>
-          <textarea id="hookup-description" rows="4" required placeholder="Describe condition, price, delivery details..." style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-dark); font-size: 0.9rem; resize: vertical; font-family: 'Inter', sans-serif;"></textarea>
+        <div class="amz-form-group">
+          <label>Product Details / Description</label>
+          <textarea id="hookup-description" rows="4" required placeholder="Describe condition, price, delivery details..." style="padding: 0.65rem 0.8rem; border: 1px solid var(--amz-border); border-radius: var(--radius-sm); font-size: 0.9rem; font-family: inherit; resize: vertical;"></textarea>
         </div>
 
-        <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
-          <button id="btn-hookup-submit" type="submit" class="btn btn-primary" style="flex: 1; padding: 1rem;">Post Advertisement</button>
-          <button type="button" class="btn btn-secondary" style="flex: 1; padding: 1rem;" onclick="closeUploadForm()">Cancel</button>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem;">
+          <button id="btn-hookup-submit" type="submit" class="amz-btn amz-btn-yellow" style="flex: 1;">Post Advertisement</button>
+          <button type="button" class="amz-btn amz-btn-secondary" style="flex: 1;" onclick="closeUploadForm()">Cancel</button>
         </div>
       </form>
     </div>
   </div>
 
+  <!-- Toast -->
   <div id="toast" class="toast hidden"></div>
 
 </body>

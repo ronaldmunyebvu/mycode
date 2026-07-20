@@ -6,128 +6,167 @@
   <title>eShop Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
-      min-height: 100vh;
-      color: var(--text-body);
-      font-family: 'Inter', sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-      background-color: var(--bg-white);
-    }
-    .username {
-      color: var(--accent-navy);
-    }
-  </style>
 </head>
 <body>
 
-  <!-- PROMO BANNER -->
-  <div class="promo-banner" style="width: 100%;">
-    🎉 Advertise your products for free on eShop — Reach buyers instantly!
-  </div>
+  <!-- ===================== HEADER ===================== -->
+  <header class="amz-header">
+    <div class="amz-header-inner">
+      <a href="index.html" class="amz-logo">
+        <span class="amz-logo-text">e<span class="amz-logo-accent">Shop</span></span>
+        <span class="amz-logo-tagline">.co.zw</span>
+      </a>
 
-  <div class="glass-card" style="padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; align-items: center; width: 100%; max-width: 1200px; margin: 2rem auto; border-radius: var(--radius);">
-    <h1 style="font-size: clamp(1.8rem, 4vw, 2.5rem); color: var(--text-dark); font-family: 'Playfair Display', serif;">Welcome to <span class="username">eShop</span>, <br><span class="username" id="display-name"></span></h1>
-    
-    <div style="display: flex; flex-wrap: wrap; gap: 1rem; width: 100%; max-width: 600px;">
-      <button class="btn btn-primary" style="flex: 1; font-size: 1rem; padding: 1rem;" onclick="openUploadForm()">
-        📢 Advertise Product
-      </button>
-      <button class="btn btn-secondary" style="flex: 1; font-size: 1rem; padding: 1rem;" onclick="window.location.href='manage.html'">
-        ⚙️ Manage My Ads
-      </button>
+      <div class="amz-search-bar">
+        <select id="category-select" class="amz-search-category">
+          <option value="all">All Categories</option>
+        </select>
+        <input
+          id="search-input"
+          type="text"
+          class="amz-search-input"
+          placeholder="Search your products..."
+          onkeypress="if(event.key === 'Enter') fetchHookups()"
+        />
+        <button class="amz-search-btn" onclick="fetchHookups()">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
+
+      <div class="amz-header-right">
+        <div id="header-user-area">
+          <button class="amz-header-link" onclick="window.location.href='index.html'">
+            <span class="amz-header-label">Browse</span>
+            <span class="amz-header-value">Marketplace</span>
+          </button>
+          <button class="amz-header-link" onclick="handleLogout()">
+            <span class="amz-header-value" style="color:#f0c14b;">Logout</span>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <h3 class="section-title" style="align-self: flex-start;">Recent Advertised Products</h3>
-    <div id="hookups-container" class="product-grid">
+    <div class="amz-category-bar" id="category-bar">
+      <button class="amz-category-item active" data-category="all" onclick="filterByCategory('all')">All</button>
+    </div>
+  </header>
+
+  <!-- ===================== DASHBOARD MAIN ===================== -->
+  <main class="amz-main">
+
+    <!-- Welcome Section -->
+    <div class="amz-dashboard-welcome">
+      <div class="amz-dashboard-welcome-text">
+        <h1>Welcome, <span id="display-name"></span></h1>
+        <p>Manage your advertised products and discover new opportunities.</p>
+      </div>
+      <div class="amz-dashboard-actions">
+        <button class="amz-btn amz-btn-orange" onclick="openUploadForm()">
+          + Advertise Product
+        </button>
+        <button class="amz-btn amz-btn-secondary" onclick="window.location.href='manage.html'">
+          Manage My Ads
+        </button>
+      </div>
+    </div>
+
+    <!-- Results bar -->
+    <div class="amz-results-bar">
+      <span id="results-count" class="amz-results-count"></span>
+      <div class="amz-sort-area">
+        <label for="sort-select" class="amz-sort-label">Sort by:</label>
+        <select id="sort-select" class="amz-sort-select" onchange="fetchHookups()">
+          <option value="newest">Newest</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="rating">Rating</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div id="hookups-container" class="amz-product-grid">
       <!-- Products injected here -->
     </div>
-    
-    <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem;">
-      <button class="btn btn-secondary" onclick="window.location.href='index.html'">View Marketplace</button>
-      <button class="btn btn-outline" style="border-color: #dc2626; color: #dc2626;" onclick="handleLogout()">Logout</button>
-    </div>
-  </div>
 
-  <!-- FOOTER -->
-  <footer class="site-footer" style="width: 100%;">
-    <div class="footer-content">
-      <div class="footer-section">
-        <h4>🛒 eShop</h4>
-        <p>Your local marketplace for products on sale.</p>
-      </div>
-      <div class="footer-section">
-        <h4>Quick Links</h4>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="amz-footer">
+    <button class="amz-back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to top</button>
+    <div class="amz-footer-grid">
+      <div class="amz-footer-col">
+        <h4>Get to Know Us</h4>
         <a href="index.html">Home</a>
-        <a href="#" onclick="openUploadForm(); return false;">Advertise a Product</a>
+        <a href="#" onclick="openUploadForm(); return false;">Advertise on eShop</a>
       </div>
-      <div class="footer-section">
-        <h4>Support</h4>
-        <a href="mailto:support@eshop.co.zw">support@eshop.co.zw</a>
+      <div class="amz-footer-col">
+        <h4>Make Money with Us</h4>
+        <a href="#" onclick="openUploadForm(); return false;">Sell on eShop</a>
+        <a href="#">Manage Your Ads</a>
+      </div>
+      <div class="amz-footer-col">
+        <h4>Help & Support</h4>
+        <a href="mailto:support@eshop.co.zw">Email Support</a>
       </div>
     </div>
-    <div class="footer-bottom">
-      <p>&copy; 2024 <span class="footer-brand">eShop</span>. All rights reserved.</p>
+    <div class="amz-footer-bottom">
+      <span class="amz-footer-logo">e<span>Shop</span></span>
+      <span>&copy; 2024 eShop. All rights reserved.</span>
     </div>
   </footer>
 
-  <!-- GALLERY MODAL -->
-  <div id="gallery-overlay" class="overlay hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 1rem;" onclick="closeGallery()">
-    <div style="position: relative; max-width: 800px; width: 100%; display: flex; flex-direction: column; gap: 1rem; align-items: center;" onclick="event.stopPropagation()">
-      <button style="position: absolute; top: -3rem; right: 0; background: transparent; border: none; color: white; font-size: 2rem; cursor: pointer;" onclick="closeGallery()">&times;</button>
-      <div id="gallery-images" style="display: flex; gap: 1rem; overflow-x: auto; width: 100%; padding-bottom: 1rem; scroll-snap-type: x mandatory;">
-      </div>
-      <p style="color: #ccc; font-size: 0.9rem;">Scroll left/right to view all pictures</p>
+  <!-- ===================== GALLERY MODAL ===================== -->
+  <div id="gallery-overlay" class="overlay hidden" onclick="closeGallery()">
+    <div class="amz-gallery-inner" onclick="event.stopPropagation()">
+      <button class="amz-gallery-close" onclick="closeGallery()">&times;</button>
+      <div id="gallery-images" class="amz-gallery-images"></div>
+      <p class="amz-gallery-hint">Scroll left/right to view all pictures</p>
     </div>
   </div>
 
-  <!-- UPLOAD PRODUCT MODAL -->
-  <div id="upload-overlay" class="overlay hidden" style="position: fixed; inset: 0; background: var(--overlay-bg); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 1rem;">
-    <div class="glass-card" style="padding: 2rem; max-width: 500px; width: 100%; text-align: left; overflow-y: auto; max-height: 90vh;">
-      <h2 style="margin-top: 0; font-size: 1.5rem; color: var(--accent-navy); font-family: 'Playfair Display', serif;">Advertise Product</h2>
-      <form id="hookup-form" onsubmit="handleHookupSubmit(event)" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;">
-        
-        <div>
-          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Product Title</label>
-          <input id="hookup-name" type="text" required placeholder="e.g. iPhone 15 Pro Max" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-dark); font-size: 0.9rem;" />
+  <!-- ===================== UPLOAD PRODUCT MODAL ===================== -->
+  <div id="upload-overlay" class="overlay hidden" onclick="closeUploadForm()">
+    <div class="amz-modal" style="max-width: 520px; max-height: 90vh; overflow-y: auto; text-align: left;" onclick="event.stopPropagation()">
+      <h2 class="amz-modal-title">Advertise Product</h2>
+      <form id="hookup-form" onsubmit="handleHookupSubmit(event)" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+
+        <div class="amz-form-group">
+          <label>Product Title</label>
+          <input id="hookup-name" type="text" required placeholder="e.g. iPhone 15 Pro Max" />
         </div>
 
-        <div>
-          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Contact Number (WhatsApp)</label>
-          <input id="hookup-phone" type="tel" required placeholder="e.g. +263 77 123 4567" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-dark); font-size: 0.9rem;" />
+        <div class="amz-form-group">
+          <label>Contact Number (WhatsApp)</label>
+          <input id="hookup-phone" type="tel" required placeholder="e.g. +263 77 123 4567" />
         </div>
 
-        <div>
-          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Product Pictures (Please select exactly 3)</label>
-          <input id="hookup-pictures" type="file" accept="image/*" multiple required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-dark); font-size: 0.9rem;" onchange="if(this.files.length !== 3) { alert('Please select exactly 3 pictures.'); this.value = ''; }" />
+        <div class="amz-form-group">
+          <label>Product Pictures (Please select exactly 3)</label>
+          <input id="hookup-pictures" type="file" accept="image/*" multiple required style="padding: 0.5rem;" onchange="if(this.files.length !== 3) { alert('Please select exactly 3 pictures.'); this.value = ''; }" />
         </div>
 
-        <div>
-          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Location / Delivery Area</label>
-          <input id="hookup-location" type="text" required placeholder="e.g. Harare CBD" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-dark); font-size: 0.9rem;" />
+        <div class="amz-form-group">
+          <label>Location / Delivery Area</label>
+          <input id="hookup-location" type="text" required placeholder="e.g. Harare CBD" />
         </div>
 
-        <div>
-          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Product Details / Description</label>
-          <textarea id="hookup-description" rows="4" required placeholder="Describe condition, price, delivery details..." style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-dark); font-size: 0.9rem; resize: vertical; font-family: 'Inter', sans-serif;"></textarea>
+        <div class="amz-form-group">
+          <label>Product Details / Description</label>
+          <textarea id="hookup-description" rows="4" required placeholder="Describe condition, price, delivery details..." style="padding: 0.65rem 0.8rem; border: 1px solid var(--amz-border); border-radius: var(--radius-sm); font-size: 0.9rem; font-family: inherit; resize: vertical;"></textarea>
         </div>
 
-        <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
-          <button id="btn-hookup-submit" type="submit" class="btn btn-primary" style="flex: 1; padding: 1rem;">Post Advertisement</button>
-          <button type="button" class="btn btn-secondary" style="flex: 1; padding: 1rem;" onclick="closeUploadForm()">Cancel</button>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem;">
+          <button id="btn-hookup-submit" type="submit" class="amz-btn amz-btn-yellow" style="flex: 1;">Post Advertisement</button>
+          <button type="button" class="amz-btn amz-btn-secondary" style="flex: 1;" onclick="closeUploadForm()">Cancel</button>
         </div>
       </form>
     </div>
   </div>
 
+  <!-- Toast -->
   <div id="toast" class="toast hidden"></div>
 
   <script type="module">
@@ -135,6 +174,44 @@
 
     let currentUserSession = null;
 
+    // =============================================
+    //  STAR RATING HELPER
+    // =============================================
+    function renderStars(rating) {
+      const r = Math.round((rating || 0) * 2) / 2;
+      let html = '';
+      for (let i = 1; i <= 5; i++) {
+        if (r >= i) {
+          html += '&#9733;';
+        } else if (r >= i - 0.5) {
+          html += '&#9733;';
+        } else {
+          html += '&#9734;';
+        }
+      }
+      return html;
+    }
+
+    // =============================================
+    //  TOAST
+    // =============================================
+    let toastTimer = null;
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.remove('hidden');
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.classList.add('hidden'), 400);
+      }, 3500);
+    }
+
+    // =============================================
+    //  AUTH CHECK
+    // =============================================
     async function checkAuth() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -148,82 +225,240 @@
       setupRealtime();
     }
 
+    // =============================================
+    //  REALTIME
+    // =============================================
     function setupRealtime() {
       const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-      
+
       supabase
         .channel('public:hookups')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'hookups' }, payload => {
           if (payload.new.user_id !== currentUserSession.user.id) {
-            notificationSound.play().catch(e => console.warn('Audio blocked by browser:', e));
-            
-            const toast = document.getElementById('toast');
-            if (toast) {
-              toast.textContent = '🎉 A new product has been advertised!';
-              toast.className = 'toast show';
-              setTimeout(() => { toast.className = 'toast hidden'; }, 4000);
-            }
+            notificationSound.play().catch(e => console.warn('Audio blocked:', e));
+            showToast('A new product has been advertised!');
           }
           fetchHookups();
         })
         .subscribe();
     }
 
+    // =============================================
+    //  CATEGORY BAR
+    // =============================================
+    function buildCategoryBar(categories) {
+      const bar = document.getElementById('category-bar');
+      const select = document.getElementById('category-select');
+      if (!bar || !select) return;
+
+      bar.innerHTML = '<button class="amz-category-item active" data-category="all" onclick="filterByCategory(\'all\')">All</button>';
+      select.innerHTML = '<option value="all">All Categories</option>';
+
+      categories.forEach(cat => {
+        if (!cat) return;
+        const btn = document.createElement('button');
+        btn.className = 'amz-category-item';
+        btn.dataset.category = cat;
+        btn.textContent = cat;
+        btn.onclick = () => filterByCategory(cat);
+        bar.appendChild(btn);
+
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        select.appendChild(opt);
+      });
+    }
+
+    window.filterByCategory = function(cat) {
+      const bar = document.getElementById('category-bar');
+      if (bar) {
+        bar.querySelectorAll('.amz-category-item').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.category === cat);
+        });
+      }
+      const select = document.getElementById('category-select');
+      if (select) select.value = cat;
+      fetchHookups();
+    };
+
+    // =============================================
+    //  FETCH HOOKUPS (user's own products)
+    // =============================================
     window.fetchHookups = fetchHookups;
     async function fetchHookups() {
-      const { data, error } = await supabase.from('hookups').select(`
+      const container = document.getElementById('hookups-container');
+      if (!container) return;
+
+      container.innerHTML = '<div class="amz-loading">Loading your products...</div>';
+
+      const nameSearch = (document.getElementById('search-input')?.value || '').trim();
+      const categorySearch = document.getElementById('category-select')?.value || 'all';
+      const sortBy = document.getElementById('sort-select')?.value || 'newest';
+
+      let query = supabase.from('hookups').select(`
         *,
         hookup_likes ( user_id )
-      `).eq('user_id', currentUserSession.user.id).order('created_at', { ascending: false });
-      const container = document.getElementById('hookups-container');
-      
+      `).eq('user_id', currentUserSession.user.id);
+
+      if (nameSearch !== '') {
+        query = query.ilike('name', `%${nameSearch}%`);
+      }
+
+      if (categorySearch !== 'all') {
+        query = query.eq('category', categorySearch);
+      }
+
+      const { data, error } = await query;
+
       if (error) {
         console.error('Error fetching products', error);
-        container.innerHTML = `<p style="color: #dc2626;">Database Error: ${error.message}</p>`;
-        return;
-      }
-      
-      container.innerHTML = '';
-      if (data.length === 0) {
-        container.innerHTML = '<p style="color: var(--text-muted);">No products found.</p>';
+        container.innerHTML = `<div class="amz-empty" style="color:#dc2626;">Database Error: ${error.message}</div>`;
         return;
       }
 
-      data.forEach(p => {
+      if (!data || data.length === 0) {
+        container.innerHTML = '<div class="amz-empty">No products found. Click "Advertise Product" to get started!</div>';
+        document.getElementById('results-count').textContent = '';
+        return;
+      }
+
+      // Build category bar from user's products
+      const cats = [...new Set(data.map(p => p.category).filter(Boolean))].sort();
+      buildCategoryBar(cats);
+      const bar = document.getElementById('category-bar');
+      if (bar) {
+        bar.querySelectorAll('.amz-category-item').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.category === categorySearch);
+        });
+      }
+
+      // Sort
+      let sorted = [...data];
+      switch (sortBy) {
+        case 'price-low':
+          sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
+          break;
+        case 'price-high':
+          sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
+          break;
+        case 'rating':
+          sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+          break;
+        case 'newest':
+        default:
+          sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+          break;
+      }
+
+      // Update results count
+      const resultsEl = document.getElementById('results-count');
+      if (resultsEl) {
+        const catLabel = categorySearch !== 'all' ? ` in ${categorySearch}` : '';
+        resultsEl.textContent = `${sorted.length} product${sorted.length !== 1 ? 's' : ''}${catLabel}`;
+      }
+
+      container.innerHTML = '';
+
+      sorted.forEach(p => {
         const card = document.createElement('div');
-        card.className = 'product-card';
+        card.className = 'amz-card';
         card.onclick = () => openGallery(p.pictures);
 
-        const imagesHtml = p.pictures.map(url => `<img src="${url}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-light);" />`).join('');
-
+        const firstImage = (p.pictures && p.pictures.length > 0) ? p.pictures[0] : '';
         const likes = p.hookup_likes || [];
         const likeCount = likes.length;
         const userLiked = likes.some(l => l.user_id === currentUserSession.user.id);
-        const heartColor = userLiked ? '#dc2626' : 'var(--text-muted)';
+        const heartColor = userLiked ? '#dc2626' : '#999';
+
+        const price = p.price;
+        const originalPrice = p.original_price;
+        const rating = p.rating || 0;
+        const category = p.category || '';
+        const location = p.location || '';
+        const description = p.description || '';
+        const phone = p.phone || '';
+
+        let priceHtml = '';
+        if (price !== null && price !== undefined && price !== '') {
+          priceHtml = `
+            <div class="amz-card-price">
+              <span class="amz-price-current"><span class="amz-price-symbol">$</span>${parseFloat(price).toFixed(2)}</span>
+              ${originalPrice ? `<span class="amz-price-original">$${parseFloat(originalPrice).toFixed(2)}</span>` : ''}
+            </div>
+          `;
+        }
+
+        let ratingHtml = '';
+        if (rating > 0) {
+          const likeCountDisplay = likeCount > 0 ? `(${likeCount})` : '';
+          ratingHtml = `
+            <div class="amz-card-rating">
+              <span class="amz-stars">${renderStars(rating)}</span>
+              <span class="amz-rating-count">${rating.toFixed(1)} ${likeCountDisplay}</span>
+            </div>
+          `;
+        } else if (likeCount > 0) {
+          ratingHtml = `
+            <div class="amz-card-rating">
+              <span class="amz-rating-count">${likeCount} like${likeCount !== 1 ? 's' : ''}</span>
+            </div>
+          `;
+        }
+
+        let descHtml = '';
+        if (description) {
+          descHtml = `<div class="amz-card-desc">${description}</div>`;
+        }
+
+        let contactHtml = '';
+        if (phone) {
+          contactHtml = `<div class="amz-card-contact">&#128222; ${phone}</div>`;
+        }
 
         card.innerHTML = `
-          <h4>${p.name}</h4>
-          <p class="product-meta">📍 <strong>Location:</strong> ${p.location}</p>
-          <p class="product-meta">📞 <strong>Contact:</strong> ${p.phone}</p>
-          <p class="product-desc">${p.description}</p>
-          <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">${imagesHtml}</div>
-          <div class="like-btn" onclick="event.stopPropagation(); toggleLike('${p.id}', ${userLiked})">
-            <span style="color: ${heartColor}; font-size: 1.2rem;">❤️</span>
-            <span style="color: var(--text-body); font-size: 0.9rem; font-weight: bold;">${likeCount}</span>
+          <div class="amz-like-badge">
+            <span class="heart" style="color:${heartColor};" onclick="event.stopPropagation(); toggleLike('${p.id}', ${userLiked})">&#10084;</span>
+            <span>${likeCount}</span>
           </div>
+          <div class="amz-card-image-wrap">
+            ${firstImage ? `<img src="${firstImage}" alt="${p.name}" loading="lazy" />` : '<span style="color:#ccc; font-size:2rem;">&#128247;</span>'}
+          </div>
+          ${category ? `<span class="amz-card-category">${category}</span>` : ''}
+          <div class="amz-card-title">${p.name}</div>
+          ${ratingHtml}
+          ${priceHtml}
+          ${descHtml}
+          ${location ? `<div class="amz-card-location">&#128205; ${location}</div>` : ''}
+          ${contactHtml}
         `;
         container.appendChild(card);
       });
     }
 
+    // =============================================
+    //  LIKE TOGGLE
+    // =============================================
+    window.toggleLike = async function(hookupId, currentlyLiked) {
+      if (currentlyLiked) {
+        await supabase.from('hookup_likes').delete().match({ hookup_id: hookupId, user_id: currentUserSession.user.id });
+      } else {
+        await supabase.from('hookup_likes').insert([{ hookup_id: hookupId, user_id: currentUserSession.user.id }]);
+      }
+      fetchHookups();
+    }
+
+    // =============================================
+    //  GALLERY
+    // =============================================
     window.openGallery = function(pictures) {
       const overlay = document.getElementById('gallery-overlay');
       const galleryImages = document.getElementById('gallery-images');
-      
-      galleryImages.innerHTML = pictures.map(url => 
-        `<img src="${url}" style="height: 60vh; max-width: 90vw; object-fit: contain; border-radius: 8px; scroll-snap-align: center; flex-shrink: 0;" />`
+
+      galleryImages.innerHTML = (pictures || []).map(url =>
+        `<img src="${url}" />`
       ).join('');
-      
+
       overlay.classList.remove('hidden');
       overlay.style.display = 'flex';
     }
@@ -234,20 +469,9 @@
       overlay.style.display = 'none';
     }
 
-    window.toggleLike = async function(hookupId, currentlyLiked) {
-      if (currentlyLiked) {
-        await supabase.from('hookup_likes').delete().match({ hookup_id: hookupId, user_id: currentUserSession.user.id });
-      } else {
-        await supabase.from('hookup_likes').insert([{ hookup_id: hookupId, user_id: currentUserSession.user.id }]);
-      }
-      fetchHookups();
-    }
-
-    window.handleLogout = async function() {
-      await supabase.auth.signOut();
-      window.location.href = 'index.html';
-    }
-
+    // =============================================
+    //  UPLOAD FORM
+    // =============================================
     window.openUploadForm = function() {
       const overlay = document.getElementById('upload-overlay');
       overlay.classList.remove('hidden');
@@ -263,10 +487,10 @@
 
     window.handleHookupSubmit = async function(event) {
       event.preventDefault();
-      
+
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        alert('You must be logged in to advertise a product.');
+        showToast('You must be logged in to advertise a product.');
         return;
       }
 
@@ -278,7 +502,7 @@
       const files = picturesInput.files;
 
       if (files.length !== 3) {
-        alert('Please select exactly 3 pictures.');
+        showToast('Please select exactly 3 pictures.');
         return;
       }
 
@@ -288,52 +512,62 @@
 
       try {
         const pictureUrls = [];
-        
+
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
           const fileExt = file.name.split('.').pop();
           const fileName = `${session.user.id}-${Date.now()}-${i}.${fileExt}`;
-          
+
           const { data, error } = await supabase.storage
             .from('hookups')
             .upload(fileName, file);
 
           if (error) throw error;
-          
+
           const { data: publicData } = supabase.storage
             .from('hookups')
             .getPublicUrl(fileName);
-            
+
           pictureUrls.push(publicData.publicUrl);
         }
 
         const { error: dbError } = await supabase
           .from('hookups')
-          .insert([
-            {
-              user_id: session.user.id,
-              name,
-              phone,
-              location,
-              description,
-              pictures: pictureUrls
-            }
-          ]);
+          .insert([{
+            user_id: session.user.id,
+            name,
+            phone,
+            location,
+            description,
+            pictures: pictureUrls
+          }]);
 
         if (dbError) throw dbError;
 
-        alert('Product advertised successfully!');
+        showToast('Product advertised successfully!');
         window.location.href = 'manage.html';
-        
+
       } catch (error) {
         console.error('Error advertising product:', error);
-        alert('Error: ' + error.message);
+        showToast('Error: ' + error.message);
       } finally {
         btn.disabled = false;
         btn.textContent = 'Post Advertisement';
       }
     }
 
+    // =============================================
+    //  LOGOUT
+    // =============================================
+    window.handleLogout = async function() {
+      await supabase.auth.signOut();
+      showToast('You have been logged out.');
+      setTimeout(() => window.location.href = 'index.html', 800);
+    }
+
+    // =============================================
+    //  INIT
+    // =============================================
     checkAuth();
   </script>
 </body>

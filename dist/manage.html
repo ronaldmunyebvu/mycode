@@ -6,57 +6,172 @@
   <title>Manage My Ads — eShop</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
-  <style>
-    body { font-family: 'Inter', sans-serif; color: var(--text-body); padding: 2rem; background: var(--bg-white); }
-  </style>
-  <script type="module" crossorigin src="/assets/manage-D-gNM4qF.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/supabase-Dn92yP5L.js">
-  <link rel="stylesheet" crossorigin href="/assets/supabase-CLizWuaK.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script type="module" crossorigin src="/assets/manage-dajiI-8G.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/supabase-BqW-PtAq.js">
+  <link rel="stylesheet" crossorigin href="/assets/supabase-CHk9xlyz.css">
 </head>
 <body>
-  <div style="max-width: 1200px; margin: 0 auto; width: 100%;">
-    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
-      <h2 style="font-size: 2rem; color: var(--accent-navy); font-family: 'Playfair Display', serif;">Manage My Ads</h2>
-      <button class="btn btn-secondary" onclick="window.location.href='welcome.html'">Back to Dashboard</button>
-    </header>
-    
-    <div id="hookups-grid" class="grid"></div>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="amz-header">
+    <div class="amz-header-inner">
+      <a href="index.html" class="amz-logo">
+        <span class="amz-logo-text">e<span class="amz-logo-accent">Shop</span></span>
+        <span class="amz-logo-tagline">.co.zw</span>
+      </a>
+
+      <div class="amz-search-bar">
+        <select id="category-select" class="amz-search-category">
+          <option value="all">All Categories</option>
+        </select>
+        <input
+          id="search-input"
+          type="text"
+          class="amz-search-input"
+          placeholder="Search your ads..."
+          onkeypress="if(event.key === 'Enter') fetchHookups()"
+        />
+        <button class="amz-search-btn" onclick="fetchHookups()">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
+
+      <div class="amz-header-right">
+        <button class="amz-header-link" onclick="window.location.href='welcome.html'">
+          <span class="amz-header-label">Back to</span>
+          <span class="amz-header-value">Dashboard</span>
+        </button>
+        <button class="amz-header-link" onclick="window.location.href='index.html'">
+          <span class="amz-header-label">Browse</span>
+          <span class="amz-header-value">Marketplace</span>
+        </button>
+        <button class="amz-header-link" onclick="handleLogout()">
+          <span class="amz-header-value" style="color:#f0c14b;">Logout</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="amz-category-bar" id="category-bar">
+      <button class="amz-category-item active" data-category="all" onclick="filterByCategory('all')">All</button>
+    </div>
+  </header>
+
+  <!-- ===================== MAIN CONTENT ===================== -->
+  <main class="amz-main">
+
+    <!-- Page Title -->
+    <div class="amz-page-header">
+      <h1>Manage My Ads</h1>
+      <p>Edit, delete, or review all your advertised products.</p>
+    </div>
+
+    <!-- Results bar -->
+    <div class="amz-results-bar">
+      <span id="results-count" class="amz-results-count"></span>
+      <div class="amz-sort-area">
+        <label for="sort-select" class="amz-sort-label">Sort by:</label>
+        <select id="sort-select" class="amz-sort-select" onchange="fetchHookups()">
+          <option value="newest">Newest</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="rating">Rating</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div id="hookups-container" class="amz-product-grid">
+      <!-- Products injected here -->
+    </div>
+
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="amz-footer">
+    <button class="amz-back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to top</button>
+    <div class="amz-footer-grid">
+      <div class="amz-footer-col">
+        <h4>Get to Know Us</h4>
+        <a href="index.html">Home</a>
+        <a href="welcome.html">Dashboard</a>
+      </div>
+      <div class="amz-footer-col">
+        <h4>Make Money with Us</h4>
+        <a href="welcome.html">Advertise Products</a>
+        <a href="#">Manage Your Ads</a>
+      </div>
+      <div class="amz-footer-col">
+        <h4>Help & Support</h4>
+        <a href="mailto:support@eshop.co.zw">Email Support</a>
+      </div>
+    </div>
+    <div class="amz-footer-bottom">
+      <span class="amz-footer-logo">e<span>Shop</span></span>
+      <span>&copy; 2024 eShop. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <!-- ===================== GALLERY MODAL ===================== -->
+  <div id="gallery-overlay" class="overlay hidden" onclick="closeGallery()">
+    <div class="amz-gallery-inner" onclick="event.stopPropagation()">
+      <button class="amz-gallery-close" onclick="closeGallery()">&times;</button>
+      <div id="gallery-images" class="amz-gallery-images"></div>
+      <p class="amz-gallery-hint">Scroll left/right to view all pictures</p>
+    </div>
   </div>
 
-  <!-- Edit Modal -->
-  <div id="edit-overlay" class="overlay hidden" style="position: fixed; inset: 0; background: var(--overlay-bg); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 1rem;">
-    <div class="glass-card" style="padding: 2rem; max-width: 500px; width: 100%; text-align: left; overflow-y: auto; max-height: 90vh;">
-      <h2 style="margin-top: 0; font-size: 1.5rem; color: var(--accent-navy); font-family: 'Playfair Display', serif;">Edit Product Details</h2>
-      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Note: To change pictures, please delete this ad and upload a new one.</p>
-      
+  <!-- ===================== EDIT MODAL ===================== -->
+  <div id="edit-overlay" class="overlay hidden" onclick="closeEdit()">
+    <div class="amz-modal" style="max-width: 520px; max-height: 90vh; overflow-y: auto; text-align: left;" onclick="event.stopPropagation()">
+      <h2 class="amz-modal-title">Edit Product</h2>
+      <p class="amz-modal-text">To change pictures, delete this ad and upload a new one.</p>
+
       <form id="edit-form" style="display: flex; flex-direction: column; gap: 1rem;">
         <input type="hidden" id="edit-id" />
-        
-        <div>
-          <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Name</label>
-          <input id="edit-name" type="text" required style="width: 100%; padding: 0.8rem; border-radius: 8px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-dark); font-size: 0.9rem;" />
+
+        <div class="amz-form-group">
+          <label>Product Title</label>
+          <input id="edit-name" type="text" required />
         </div>
-        <div>
-          <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Phone</label>
-          <input id="edit-phone" type="tel" required style="width: 100%; padding: 0.8rem; border-radius: 8px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-dark); font-size: 0.9rem;" />
+
+        <div class="amz-form-group">
+          <label>Contact Number</label>
+          <input id="edit-phone" type="tel" required />
         </div>
-        <div>
-          <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Location</label>
-          <input id="edit-location" type="text" required style="width: 100%; padding: 0.8rem; border-radius: 8px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-dark); font-size: 0.9rem;" />
+
+        <div class="amz-form-group">
+          <label>Location</label>
+          <input id="edit-location" type="text" required />
         </div>
-        <div>
-          <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">Description</label>
-          <textarea id="edit-description" rows="4" required style="width: 100%; padding: 0.8rem; border-radius: 8px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-dark); resize: vertical; font-family: 'Inter', sans-serif; font-size: 0.9rem;"></textarea>
+
+        <div class="amz-form-group">
+          <label>Description</label>
+          <textarea id="edit-description" rows="4" required style="padding: 0.65rem 0.8rem; border: 1px solid var(--amz-border); border-radius: var(--radius-sm); font-size: 0.9rem; font-family: inherit; resize: vertical;"></textarea>
         </div>
-        
-        <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
-          <button type="submit" id="btn-edit-submit" class="btn btn-primary" style="flex: 1; padding: 1rem;">Save Changes</button>
-          <button type="button" class="btn btn-secondary" style="flex: 1; padding: 1rem;" onclick="closeEdit()">Cancel</button>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem;">
+          <button type="submit" id="btn-edit-submit" class="amz-btn amz-btn-yellow" style="flex: 1;">Save Changes</button>
+          <button type="button" class="amz-btn amz-btn-secondary" style="flex: 1;" onclick="closeEdit()">Cancel</button>
         </div>
       </form>
     </div>
   </div>
+
+  <!-- ===================== DELETE CONFIRM MODAL ===================== -->
+  <div id="delete-overlay" class="overlay hidden" onclick="closeDeleteConfirm()">
+    <div class="amz-modal" style="max-width: 400px; text-align: center;" onclick="event.stopPropagation()">
+      <h2 class="amz-modal-title">Delete Product?</h2>
+      <p class="amz-modal-text">This action cannot be undone. All images and data will be permanently removed.</p>
+      <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+        <button class="amz-btn amz-btn-danger full-width" id="btn-confirm-delete">Delete</button>
+        <button class="amz-btn amz-btn-secondary full-width" onclick="closeDeleteConfirm()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden"></div>
 
 </body>
 </html>

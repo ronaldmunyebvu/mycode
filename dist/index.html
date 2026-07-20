@@ -7,48 +7,61 @@
   <title>eShop | Products On Sale Near You</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
-  <script type="module" crossorigin src="/assets/main-BRiBXp7o.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/supabase-Dn92yP5L.js">
-  <link rel="stylesheet" crossorigin href="/assets/supabase-CLizWuaK.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script type="module" crossorigin src="/assets/main-ByMPIsh-.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/supabase-BqW-PtAq.js">
+  <link rel="stylesheet" crossorigin href="/assets/supabase-CHk9xlyz.css">
 </head>
 <body>
 
-  <!-- ===================== PROMO BANNER ===================== -->
-  <div class="promo-banner">
-    🎉 Advertise your products for free on eShop — Reach buyers instantly!
-  </div>
-
   <!-- ===================== HEADER ===================== -->
-  <header class="site-header">
-    <div class="logo">
-      <span class="logo-icon">🛒</span>
-      <span class="logo-text">e<span class="accent">Shop</span></span>
-      <button class="btn btn-secondary btn-sm" onclick="showManagerPrompt()" style="margin-left: 0.5rem;">Manager</button>
+  <header class="amz-header">
+    <div class="amz-header-inner">
+      <a href="index.html" class="amz-logo">
+        <span class="amz-logo-text">e<span class="amz-logo-accent">Shop</span></span>
+        <span class="amz-logo-tagline">.co.zw</span>
+      </a>
+
+      <div class="amz-header-right">
+        <div id="visitor-badge" class="amz-header-link amz-visitor">
+          <span class="amz-header-label">Hello, Visitor</span>
+          <span class="amz-header-value"><span id="visitor-count-display">0</span> views</span>
+        </div>
+        <div id="header-auth-area">
+          <button id="header-auth-btn" class="amz-header-link" onclick="showAuthModal()">
+            <span class="amz-header-label">Hello, Sign in</span>
+            <span class="amz-header-value">Account &amp; Lists</span>
+          </button>
+          <div id="header-user-menu" class="hidden">
+            <button class="amz-header-link" onclick="window.location.href='welcome.html'">
+              <span class="amz-header-label">Hello, <span id="header-username">User</span></span>
+              <span class="amz-header-value">Dashboard</span>
+            </button>
+            <button class="amz-header-link" onclick="handleLogout()">
+              <span class="amz-header-value" style="color:#f0c14b;">Logout</span>
+            </button>
+          </div>
+        </div>
+        <button class="amz-header-link amz-manager-btn" onclick="showManagerPrompt()">
+          <span class="amz-header-label">Manager</span>
+          <span class="amz-header-value">Portal</span>
+        </button>
+      </div>
     </div>
-    <div class="header-right">
-      <div id="visitor-badge" class="visitor-badge">
-        <span class="visitor-icon">👁️</span>
-        <span id="visitor-count-display">0</span> visitors
-      </div>
-      <button id="header-auth-btn" class="btn btn-primary" onclick="showAuthModal()">Login / Sign Up</button>
-      <div id="header-user-menu" class="hidden" style="align-items: center; gap: 1rem;">
-        <span style="font-size: 0.9rem; color: var(--accent-navy); font-weight: 500;">Welcome, <span id="header-username">User</span></span>
-        <button class="btn btn-secondary" onclick="window.location.href='welcome.html'">Dashboard</button>
-        <button class="btn btn-outline btn-sm" onclick="handleLogout()">Logout</button>
-      </div>
+
+    <div class="amz-category-bar" id="category-bar">
+      <button class="amz-category-item active" data-category="all" onclick="filterByCategory('all')">All</button>
     </div>
   </header>
 
   <!-- ===================== MANAGER PASSWORD MODAL ===================== -->
   <div id="manager-overlay" class="overlay hidden">
-    <div class="modal glass-card" style="max-width: 320px; padding: 2rem;">
-      <h2 class="modal-title" style="font-size: 1.4rem;">Manager Access</h2>
-      <div class="divider"></div>
-      <p class="modal-text">Enter the manager password to continue:</p>
-      <input id="manager-pass" type="password" placeholder="Password" class="full-width" style="margin:0.5rem 0; padding:0.7rem 1rem; border-radius: 10px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-dark); font-size: 0.9rem;" />
-      <button class="btn btn-primary full-width" style="margin-top: 0.5rem;" onclick="checkManagerPass()">Enter</button>
-      <button class="btn btn-secondary full-width" style="margin-top:0.5rem;" onclick="hideManagerPrompt()">Cancel</button>
+    <div class="amz-modal" onclick="event.stopPropagation()">
+      <h2 class="amz-modal-title">Manager Access</h2>
+      <p class="amz-modal-text">Enter the manager password to continue:</p>
+      <input id="manager-pass" type="password" placeholder="Password" class="amz-modal-input" />
+      <button class="amz-btn amz-btn-primary full-width" onclick="checkManagerPass()">Enter</button>
+      <button class="amz-btn amz-btn-secondary full-width" style="margin-top:0.5rem;" onclick="hideManagerPrompt()">Cancel</button>
     </div>
   </div>
   <script>
@@ -73,164 +86,188 @@
   }
   </script>
 
-  <!-- ===================== HERO SECTION ===================== -->
-  <section class="hero-section">
-    <div class="hero-content">
-      <h1 class="hero-title">Discover Amazing Deals, Right In Your Area.</h1>
-      <p class="hero-subtitle">
-        Browse products on sale from local sellers. Find great deals or advertise your own products to reach buyers instantly.
-      </p>
-      <button class="btn btn-primary pulse-glow" style="padding: 1rem 2.5rem; font-size: 1rem; letter-spacing: 0.5px;" onclick="handleAdvertiseClick()">
-        📢 &nbsp;ADVERTISE YOUR PRODUCTS HERE
+  <!-- ===================== HERO BANNER ===================== -->
+  <section class="amz-hero">
+    <div class="amz-hero-content">
+      <h1 class="amz-hero-title">Discover Amazing Deals, Right In Your Area</h1>
+      <p class="amz-hero-sub">Browse products on sale from local sellers. Find great deals or advertise your own products to reach buyers instantly.</p>
+      <button class="amz-btn amz-btn-orange" onclick="handleAdvertiseClick()">
+        Advertise Your Products
       </button>
+      <div class="amz-hero-search-wrapper">
+        <div class="amz-hero-search">
+          <select id="category-select" class="amz-search-category">
+            <option value="all">All Categories</option>
+          </select>
+          <input
+            id="search-input"
+            type="text"
+            class="amz-search-input"
+            placeholder="Search products by name..."
+            oninput="handleSearchInput(this.value)"
+            onkeypress="if(event.key === 'Enter') { hidePredictions(); fetchProducts(); }"
+            onfocus="showCachedPredictions()"
+            autocomplete="off"
+          />
+          <button class="amz-search-btn" onclick="hidePredictions(); fetchProducts()">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+        </div>
+        <div id="search-predictions" class="amz-predictions hidden"></div>
+      </div>
     </div>
   </section>
 
   <!-- ===================== MAIN CONTENT ===================== -->
-  <main class="main-content">
+  <main class="amz-main">
 
-    <!-- SEARCH FIELDS -->
-    <div class="search-fields">
-      <div class="search-row">
-        <input 
-          id="search-input"
-          type="text" 
-          placeholder="🔍 Search by product name..." 
-          onkeypress="if(event.key === 'Enter') fetchProducts()"
-        />
+    <div class="amz-results-bar">
+      <span id="results-count" class="amz-results-count"></span>
+      <div class="amz-sort-area">
+        <label for="sort-select" class="amz-sort-label">Sort by:</label>
+        <select id="sort-select" class="amz-sort-select" onchange="fetchProducts()">
+          <option value="newest">Newest</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="rating">Avg. Customer Reviews</option>
+        </select>
       </div>
-      <div class="search-row">
-        <input 
-          id="location-input"
-          type="text" 
-          placeholder="📍 Your current location (optional — shows nearby products first)" 
-          onkeypress="if(event.key === 'Enter') fetchProducts()"
-        />
-      </div>
-      <div class="search-row">
-        <button class="btn btn-primary" style="padding: 0.9rem 2rem; width: 100%;" onclick="fetchProducts()">
-          Search
-        </button>
-      </div>
-      <span class="location-hint">Enter your location to see nearby products first, or leave blank to search all.</span>
     </div>
 
-    <!-- SECTION HEADING -->
-    <h3 class="section-title">Available Products</h3>
-
-    <!-- PRODUCTS GRID -->
-    <div id="products-container" class="product-grid">
-      <!-- Products will be injected here -->
+    <div id="products-container" class="amz-product-grid">
+      <!-- Products injected here -->
     </div>
 
   </main>
 
   <!-- ===================== FOOTER ===================== -->
-  <footer class="site-footer">
-    <div class="footer-content">
-      <div class="footer-section">
-        <h4>🛒 eShop</h4>
-        <p>Your local marketplace for products on sale. Buy and sell with ease in your area.</p>
-      </div>
-      <div class="footer-section">
-        <h4>Quick Links</h4>
+  <footer class="amz-footer">
+    <button class="amz-back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to top</button>
+    <div class="amz-footer-grid">
+      <div class="amz-footer-col">
+        <h4>Get to Know Us</h4>
         <a href="index.html">Home</a>
-        <a href="#" onclick="handleAdvertiseClick(); return false;">Advertise a Product</a>
-        <a href="#" onclick="showAuthModal(); return false;">Login / Sign Up</a>
+        <a href="#" onclick="handleAdvertiseClick(); return false;">Advertise on eShop</a>
+        <a href="#">About eShop</a>
       </div>
-      <div class="footer-section">
-        <h4>Support</h4>
-        <a href="mailto:support@eshop.co.zw">support@eshop.co.zw</a>
-        <p>Available Mon–Sat, 8am–5pm</p>
+      <div class="amz-footer-col">
+        <h4>Make Money with Us</h4>
+        <a href="#" onclick="handleAdvertiseClick(); return false;">Sell on eShop</a>
+        <a href="#">Advertise Products</a>
       </div>
-      <div class="footer-section">
-        <h4>Stay Connected</h4>
-        <p>Follow us on social media for the latest deals and updates.</p>
+      <div class="amz-footer-col">
+        <h4>Help & Support</h4>
+        <a href="mailto:support@eshop.co.zw">Email Support</a>
+        <a href="#" onclick="showAuthModal(); return false;">Your Account</a>
+        <a href="#">FAQ</a>
       </div>
     </div>
-    <div class="footer-bottom">
-      <p>&copy; 2024 <span class="footer-brand">eShop</span>. All rights reserved.</p>
+    <div class="amz-footer-bottom">
+      <span class="amz-footer-logo">e<span>Shop</span></span>
+      <span>&copy; 2024 eShop. All rights reserved.</span>
     </div>
   </footer>
 
   <!-- ===================== AUTH MODAL OVERLAY ===================== -->
   <div id="auth-overlay" class="overlay hidden" onclick="closeAuthModal()">
-    <div id="auth-toggle-container" class="auth-toggle-container" onclick="event.stopPropagation()">
-      <div class="auth-tabs">
-        <button id="tab-login" class="auth-tab active" onclick="showForm('login')">Login</button>
-        <button id="tab-signup" class="auth-tab" onclick="showForm('signup')">Sign Up</button>
+    <div id="auth-toggle-container" class="amz-auth-container" onclick="event.stopPropagation()">
+      <div class="amz-auth-header">
+        <h2>eShop</h2>
+      </div>
+      <div class="amz-auth-tabs">
+        <button id="tab-login" class="amz-auth-tab active" onclick="showForm('login')">Sign In</button>
+        <button id="tab-signup" class="amz-auth-tab" onclick="showForm('signup')">Create Account</button>
       </div>
 
       <!-- LOGIN FORM -->
-      <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label for="login-email">Email Address</label>
-          <input id="login-email" type="email" placeholder="you@example.com" required />
+      <form id="login-form" class="amz-auth-form" onsubmit="handleLogin(event)">
+        <div class="amz-form-group">
+          <label for="login-email">Email</label>
+          <input id="login-email" type="email" required />
         </div>
-        <div class="form-group">
+        <div class="amz-form-group">
           <label for="login-password">Password</label>
-          <input id="login-password" type="password" placeholder="••••••••" required />
+          <input id="login-password" type="password" required />
         </div>
-        <p class="forgot-text"><a href="#" onclick="showForgotPassword()">Forgot Password?</a></p>
-        <button type="submit" id="btn-login" class="btn btn-primary full-width">
-          🔐 &nbsp;Login to eShop
+        <p class="amz-forgot"><a href="#" onclick="showForgotPassword()">Forgot Password?</a></p>
+        <button type="submit" id="btn-login" class="amz-btn amz-btn-yellow full-width">
+          Sign In
         </button>
-        <p class="switch-text">Don't have an account? <a href="#" onclick="showForm('signup')">Sign Up Free</a></p>
+        <p class="amz-auth-switch">Don't have an account? <a href="#" onclick="showForm('signup')">Create one</a></p>
       </form>
 
       <!-- SIGNUP FORM -->
-      <form id="signup-form" class="auth-form hidden" onsubmit="handleSignup(event)">
-        <div class="form-group">
+      <form id="signup-form" class="amz-auth-form hidden" onsubmit="handleSignup(event)">
+        <div class="amz-form-group">
           <label for="signup-name">Username</label>
-          <input id="signup-name" type="text" placeholder="Choose a username" required />
+          <input id="signup-name" type="text" required />
         </div>
-        <div class="form-group">
-          <label for="signup-email">Email Address</label>
-          <input id="signup-email" type="email" placeholder="you@example.com" required />
+        <div class="amz-form-group">
+          <label for="signup-email">Email</label>
+          <input id="signup-email" type="email" required />
         </div>
-        <div class="form-group">
+        <div class="amz-form-group">
           <label for="signup-password">Password</label>
-          <input id="signup-password" type="password" placeholder="Create a strong password" required />
+          <input id="signup-password" type="password" required />
         </div>
-        <div class="form-group">
-          <label for="signup-confirm">Confirm Password</label>
-          <input id="signup-confirm" type="password" placeholder="Repeat your password" required />
+        <div class="amz-form-group">
+          <label for="signup-confirm">Re-enter Password</label>
+          <input id="signup-confirm" type="password" required />
         </div>
-        <button type="submit" id="btn-signup" class="btn btn-primary full-width">
-          🚀 &nbsp;Create My Account
+        <button type="submit" id="btn-signup" class="amz-btn amz-btn-yellow full-width">
+          Create your eShop account
         </button>
-        <p class="switch-text">Already have an account? <a href="#" onclick="showForm('login')">Login</a></p>
+        <p class="amz-auth-switch">Already have an account? <a href="#" onclick="showForm('login')">Sign in</a></p>
       </form>
     </div>
   </div>
 
   <!-- ===================== FORGOT PASSWORD MODAL ===================== -->
   <div id="forgot-overlay" class="overlay hidden" onclick="closeForgotPassword()">
-    <div class="modal glass-card forgot-modal" onclick="event.stopPropagation()">
-      <h2 class="modal-title">Reset Password</h2>
-      <div class="divider"></div>
-      <p class="modal-text" id="forgot-desc">Enter the email address you used to sign up and we'll send you a link to reset your password.</p>
+    <div class="amz-modal" onclick="event.stopPropagation()">
+      <h2 class="amz-modal-title">Password Assistance</h2>
+      <p class="amz-modal-text" id="forgot-desc">Enter the email address you used to sign up and we'll send you a link to reset your password.</p>
       <form id="forgot-form" onsubmit="handleForgotPassword(event)">
-        <div class="form-group">
-          <label for="forgot-email">Email Address</label>
-          <input id="forgot-email" type="email" placeholder="you@example.com" required />
+        <div class="amz-form-group">
+          <label for="forgot-email">Email</label>
+          <input id="forgot-email" type="email" required />
         </div>
-        <button type="submit" id="btn-forgot" class="btn btn-primary full-width">
-          📧 &nbsp;Send Reset Link
+        <button type="submit" id="btn-forgot" class="amz-btn amz-btn-yellow full-width">
+          Send Reset Link
         </button>
       </form>
-      <button class="btn btn-secondary full-width" style="margin-top: 0.75rem;" onclick="closeForgotPassword()">Back to Login</button>
+      <button class="amz-btn amz-btn-secondary full-width" style="margin-top: 0.75rem;" onclick="closeForgotPassword()">Back to Sign In</button>
     </div>
   </div>
 
   <!-- ===================== GALLERY MODAL ===================== -->
-  <div id="gallery-overlay" class="overlay hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 1rem;" onclick="closeGallery()">
-    <div style="position: relative; max-width: 800px; width: 100%; display: flex; flex-direction: column; gap: 1rem; align-items: center;" onclick="event.stopPropagation()">
-      <button style="position: absolute; top: -3rem; right: 0; background: transparent; border: none; color: white; font-size: 2rem; cursor: pointer;" onclick="closeGallery()">&times;</button>
-      <div id="gallery-images" style="display: flex; gap: 1rem; overflow-x: auto; width: 100%; padding-bottom: 1rem; scroll-snap-type: x mandatory;">
-        <!-- Images injected here -->
-      </div>
-      <p style="color: #ccc; font-size: 0.9rem;">Scroll left/right to view all pictures</p>
+  <div id="gallery-overlay" class="overlay hidden" onclick="closeGallery()">
+    <div class="amz-gallery-inner" onclick="event.stopPropagation()">
+      <button class="amz-gallery-close" onclick="closeGallery()">&times;</button>
+      <div id="gallery-images" class="amz-gallery-images"></div>
+      <p class="amz-gallery-hint">Scroll left/right to view all pictures</p>
+    </div>
+  </div>
+
+  <!-- ===================== RESET PASSWORD MODAL ===================== -->
+  <div id="reset-overlay" class="overlay hidden">
+    <div class="amz-modal" onclick="event.stopPropagation()">
+      <h2 class="amz-modal-title">Set New Password</h2>
+      <p class="amz-modal-text" id="reset-desc">Enter your new password below.</p>
+      <form id="reset-form" onsubmit="handleResetPassword(event)">
+        <div class="amz-form-group">
+          <label for="reset-password">New Password</label>
+          <input id="reset-password" type="password" required minlength="6" />
+        </div>
+        <div class="amz-form-group">
+          <label for="reset-confirm">Confirm New Password</label>
+          <input id="reset-confirm" type="password" required minlength="6" />
+        </div>
+        <button type="submit" id="btn-reset" class="amz-btn amz-btn-yellow full-width">
+          Update Password
+        </button>
+      </form>
+      <button class="amz-btn amz-btn-secondary full-width" style="margin-top: 0.75rem;" onclick="closeResetPassword()">Back to Sign In</button>
     </div>
   </div>
 
